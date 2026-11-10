@@ -1,0 +1,330 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="Dr. Issac Immanuel, Medical Officer in Chennai. Inpatient, outpatient and remote clinical practice, plus ICD-10/DRG medical review.">
+<style>*,*::before,*::after{box-sizing:border-box}html{scroll-behavior:smooth}@media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}}body{margin:0}img{max-width:100%}</style>
+<title>Dr. Issac Immanuel</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: a clinical record. Single reading column, mono chart labels in a left gutter, chronology as the spine. */
+:root {
+  --bg: #f4f7f7;
+  --surface: #ffffff;
+  --ink: #10201e;
+  --muted: #566b68;
+  --line: #d6e1df;
+  --accent: #0b7a68;
+  --accent-soft: #dcefeb;
+  --font-display: "Bricolage Grotesque", "Inter", system-ui, sans-serif;
+  --font-body: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0c1615; --surface: #13201e; --ink: #e4eeec; --muted: #93aaa6;
+    --line: #233533; --accent: #4fc7b0; --accent-soft: #173430; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0c1615; --surface: #13201e; --ink: #e4eeec; --muted: #93aaa6;
+  --line: #233533; --accent: #4fc7b0; --accent-soft: #173430; color-scheme: dark;
+}
+
+body {
+  background: var(--bg); color: var(--ink);
+  font: 400 1rem/1.6 var(--font-body);
+  -webkit-font-smoothing: antialiased;
+}
+body::before {
+  content: ""; position: fixed; inset: 0 0 auto;
+  height: env(safe-area-inset-top, 0px); z-index: 10;
+  background: color-mix(in srgb, var(--bg) 80%, transparent);
+}
+.wrap {
+  max-width: 60rem; margin: 0 auto;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+
+/* Nav: translucent material, content scrolls beneath */
+.nav {
+  position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5;
+  background: color-mix(in srgb, var(--bg) 78%, transparent);
+  backdrop-filter: blur(18px) saturate(170%);
+  -webkit-backdrop-filter: blur(18px) saturate(170%);
+}
+.nav::after {
+  content: ""; position: absolute; inset: auto 0 -12px; height: 12px; pointer-events: none;
+  background: linear-gradient(var(--bg), transparent); opacity: .6;
+}
+.nav .wrap { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding-block: .8rem; }
+.mark { font: 700 1rem/1 var(--font-display); letter-spacing: -0.01em; color: var(--ink); text-decoration: none; }
+.nav ul { display: flex; gap: 1.25rem; list-style: none; margin: 0; padding: 0; flex-wrap: wrap; }
+.nav a.l { font: 500 .8rem/1 var(--font-mono); color: var(--muted); text-decoration: none; text-transform: uppercase; letter-spacing: .06em; }
+.nav a.l:hover { color: var(--accent); }
+@media (prefers-reduced-transparency: reduce) { .nav { background: var(--bg); backdrop-filter: none; } }
+
+a:focus-visible, button:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 4px; }
+
+/* Hero */
+.hero { padding-block: clamp(3rem, 9vw, 6.5rem) clamp(2.5rem, 6vw, 4rem); }
+.eyebrow { font: 500 .78rem/1.4 var(--font-mono); text-transform: uppercase; letter-spacing: .08em; color: var(--accent); margin: 0 0 1.25rem; }
+h1 {
+  font: 700 clamp(2.5rem, 7.5vw, 5rem)/1.02 var(--font-display);
+  letter-spacing: -0.035em; margin: 0; text-wrap: balance;
+}
+h1 .soft { color: var(--muted); font-weight: 500; }
+.lede { font-size: clamp(1.05rem, 2vw, 1.2rem); line-height: 1.55; color: var(--muted); max-width: 38rem; margin: 1.5rem 0 0; text-wrap: pretty; }
+.lede strong { color: var(--ink); font-weight: 600; }
+
+.actions { display: flex; flex-wrap: wrap; gap: .75rem; margin-top: 2rem; }
+.btn {
+  display: inline-flex; align-items: center; gap: .5rem;
+  font: 500 .92rem/1 var(--font-body); padding: .8rem 1.1rem; border-radius: 999px;
+  border: 1px solid var(--line); background: var(--surface); color: var(--ink);
+  text-decoration: none; cursor: pointer;
+  transition: transform 120ms ease-out, border-color 160ms ease, background 160ms ease;
+}
+.btn:hover { border-color: var(--accent); }
+.btn:active { transform: scale(0.97); transition-duration: 60ms; }
+.btn.primary { background: var(--accent); color: var(--bg); border-color: var(--accent); }
+
+/* Vitals strip: the numbers from practice */
+.vitals {
+  display: grid; grid-template-columns: repeat(4, minmax(0, 1fr));
+  border-top: 1px solid var(--line); border-bottom: 1px solid var(--line);
+  margin-top: clamp(2.5rem, 6vw, 4rem);
+}
+.vital { padding: 1.1rem 1rem 1.2rem 0; min-width: 0; }
+.vital + .vital { padding-left: 1rem; border-left: 1px solid var(--line); }
+.vital b { display: block; font: 700 clamp(1.6rem, 3.6vw, 2.2rem)/1.1 var(--font-display); letter-spacing: -0.02em; font-variant-numeric: tabular-nums; }
+.vital span { display: block; font: 400 .8rem/1.4 var(--font-mono); color: var(--muted); margin-top: .35rem; }
+@media (max-width: 640px) {
+  .vitals { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .vital:nth-child(3) { padding-left: 0; border-left: 0; }
+  .vital:nth-child(n+3) { border-top: 1px solid var(--line); }
+}
+
+/* Sections: mono label in a gutter */
+section.block { display: grid; grid-template-columns: 11rem minmax(0, 1fr); gap: 2rem; padding-block: clamp(2.5rem, 6vw, 4rem); border-top: 1px solid var(--line); scroll-margin-top: 4rem; }
+.label { font: 500 .78rem/1.5 var(--font-mono); text-transform: uppercase; letter-spacing: .08em; color: var(--muted); margin: .35rem 0 0; }
+h2 { font: 700 clamp(1.5rem, 3vw, 1.9rem)/1.15 var(--font-display); letter-spacing: -0.02em; margin: 0 0 1.25rem; text-wrap: balance; }
+@media (max-width: 720px) { section.block { grid-template-columns: minmax(0, 1fr); gap: .5rem; } }
+
+/* Skills */
+.skills { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.5rem 2rem; }
+.skills h3 { font: 600 1rem/1.3 var(--font-body); margin: 0 0 .35rem; }
+.skills p { margin: 0; color: var(--muted); font-size: .95rem; }
+@media (max-width: 560px) { .skills { grid-template-columns: minmax(0, 1fr); } }
+
+/* Timeline: real chronology, newest first */
+.timeline { list-style: none; margin: 0; padding: 0; position: relative; }
+.timeline::before { content: ""; position: absolute; left: 5px; top: .6rem; bottom: .6rem; width: 1px; background: var(--line); }
+.role { position: relative; padding-left: 2rem; padding-bottom: 2.25rem; }
+.role:last-child { padding-bottom: 0; }
+.role::before {
+  content: ""; position: absolute; left: 0; top: .45rem; width: 11px; height: 11px; border-radius: 50%;
+  background: var(--bg); border: 2px solid var(--accent);
+}
+.role.current::before { background: var(--accent); }
+.when { font: 400 .8rem/1.4 var(--font-mono); color: var(--muted); font-variant-numeric: tabular-nums; }
+.role h3 { font: 600 1.08rem/1.35 var(--font-body); margin: .25rem 0 0; }
+.org { color: var(--muted); font-size: .95rem; margin: .1rem 0 .6rem; }
+.tag { display: inline-block; font: 500 .7rem/1 var(--font-mono); text-transform: uppercase; letter-spacing: .06em; color: var(--accent); background: var(--accent-soft); padding: .3rem .5rem; border-radius: 4px; margin-left: .4rem; vertical-align: .15em; }
+.role ul { margin: 0; padding-left: 1.1rem; color: var(--ink); }
+.role li { margin: .3rem 0; max-width: 40rem; }
+.role li::marker { color: var(--muted); }
+
+/* Education & licences */
+.rows { display: grid; gap: 0; margin: 0; }
+.row { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 1rem; padding: .85rem 0; border-bottom: 1px solid var(--line); align-items: baseline; }
+.row:first-child { padding-top: 0; }
+.row dt { font-weight: 600; margin: 0; }
+.row dt small { display: block; font-weight: 400; color: var(--muted); font-size: .92rem; margin-top: .1rem; }
+.row dd { margin: 0; font: 400 .82rem/1.4 var(--font-mono); color: var(--muted); white-space: nowrap; font-variant-numeric: tabular-nums; }
+.sub { font: 500 .78rem/1.5 var(--font-mono); text-transform: uppercase; letter-spacing: .08em; color: var(--muted); margin: 2.25rem 0 .75rem; }
+
+/* Contact */
+.contact-list { display: grid; gap: .75rem; }
+.contact-item { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: .75rem; padding: 1rem 1.1rem; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; }
+.contact-item .k { font: 500 .75rem/1 var(--font-mono); text-transform: uppercase; letter-spacing: .08em; color: var(--muted); display: block; margin-bottom: .35rem; }
+.contact-item .v { font-weight: 500; user-select: all; word-break: break-all; }
+.copy { font: 500 .8rem/1 var(--font-body); padding: .55rem .85rem; }
+.copy[data-done] { color: var(--accent); border-color: var(--accent); }
+
+footer { border-top: 1px solid var(--line); padding-block: 2rem 3rem; color: var(--muted); font: 400 .8rem/1.5 var(--font-mono); }
+
+/* One orchestrated moment: hero arrives in sequence */
+@media (prefers-reduced-motion: no-preference) {
+  .hero > * { animation: rise 600ms cubic-bezier(.2,.8,.2,1) both; }
+  .hero > :nth-child(2) { animation-delay: 60ms; }
+  .hero > :nth-child(3) { animation-delay: 120ms; }
+  .hero > :nth-child(4) { animation-delay: 180ms; }
+  .hero > :nth-child(5) { animation-delay: 240ms; }
+  @keyframes rise { from { transform: translateY(10px); opacity: .4; } to { transform: none; opacity: 1; } }
+}
+@media (prefers-reduced-motion: reduce) { .btn { transition: none; } }
+</style>
+</head>
+<body>
+
+<nav class="nav" aria-label="Sections">
+  <div class="wrap">
+    <a class="mark" href="#top">Dr. Issac Immanuel</a>
+    <ul>
+      <li><a class="l" href="#experience">Experience</a></li>
+      <li><a class="l" href="#credentials">Credentials</a></li>
+      <li><a class="l" href="#contact">Contact</a></li>
+    </ul>
+  </div>
+</nav>
+
+<main class="wrap" id="top">
+  <header class="hero">
+    <p class="eyebrow">Medical Officer · Chennai, India</p>
+    <h1>Dr. Issac Immanuel <span class="soft">Manickaraj Enoch Margasis</span></h1>
+    <p class="lede">Physician with <strong>5+ years</strong> across inpatient wards, high-volume outpatient care and remote resort medicine, plus a year auditing inpatient cases against <strong>ICD-10 and DRG</strong> standards. Now completing an MBA in Healthcare Management.</p>
+    <div class="actions">
+      <a class="btn primary" href="#contact">Get in touch</a>
+      <a class="btn" href="https://linkedin.com/in/issacimmanuel" target="_blank" rel="noopener">LinkedIn ↗</a>
+    </div>
+    <div class="vitals" role="list">
+      <div class="vital" role="listitem"><b>5+ yrs</b><span>clinical &amp; review experience</span></div>
+      <div class="vital" role="listitem"><b>60–80</b><span>outpatients / day at ECHS</span></div>
+      <div class="vital" role="listitem"><b>1,000+</b><span>inpatient cases audited</span></div>
+      <div class="vital" role="listitem"><b>2</b><span>medical council registrations</span></div>
+    </div>
+  </header>
+
+  <section class="block" id="skills" aria-labelledby="skills-h">
+    <p class="label">Clinical skills</p>
+    <div>
+      <h2 id="skills-h">From the HDU to the resort clinic</h2>
+      <div class="skills">
+        <div><h3>Inpatient care</h3><p>HDU, general ward, oncology and day-care management; daily rounds and inpatient documentation.</p></div>
+        <div><h3>Outpatient &amp; chronic care</h3><p>High-volume OPD, non-communicable disease management, diagnostic work-up, lab interpretation and prescribing.</p></div>
+        <div><h3>Emergency &amp; preventive care</h3><p>First-line emergency management in remote clinics, health screening and site emergency preparedness.</p></div>
+        <div><h3>Documentation &amp; coding</h3><p>EHR documentation, longitudinal records, ICD-10 coding, SOP compliance and JCI documentation standards.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="block" id="experience" aria-labelledby="exp-h">
+    <p class="label">Experience</p>
+    <div>
+      <h2 id="exp-h">Where I've practised</h2>
+      <ol class="timeline">
+        <li class="role">
+          <span class="when">Nov 2025 – Oct 2026</span>
+          <h3>Medical Officer</h3>
+          <p class="org">Ex-Servicemen Contributory Health Scheme (ECHS), Chennai</p>
+          <ul>
+            <li>Primary point of care for Army veterans, seeing 60–80 outpatients a day and managing chronic non-communicable diseases through regular review of history, examination and lab panels.</li>
+            <li>Kept protocol-compliant documentation and longitudinal patient records under ECHS standards.</li>
+          </ul>
+        </li>
+        <li class="role">
+          <span class="when">Jul 2025 – Nov 2025</span>
+          <h3>Junior Resident</h3>
+          <p class="org">Saveetha Medical College and Hospital, Chennai</p>
+          <ul>
+            <li>Ran consultations, interpreted investigations and performed minor outpatient surgical procedures.</li>
+            <li>Documented encounters in the hospital's in-house EHR.</li>
+          </ul>
+        </li>
+        <li class="role">
+          <span class="when">Mar 2023 – Jun 2025</span>
+          <h3>Medical Officer</h3>
+          <p class="org">Island Health Solutions Pvt Ltd, Malé, Maldives</p>
+          <ul>
+            <li>Ran independent clinics across multiple resort clusters, seeing 20+ patients a day across emergencies, routine care and health screening.</li>
+            <li>Responsible for emergency preparedness at each site, plus diagnosis, lab evaluation, prescribing and medical records.</li>
+          </ul>
+        </li>
+        <li class="role">
+          <span class="when">Apr 2022 – Feb 2023</span>
+          <h3>Assistant Manager, Physician Reviews <span class="tag">Medical review</span></h3>
+          <p class="org">EXL Service (Health), Chennai</p>
+          <ul>
+            <li>Medical-necessity and quality reviews on 1,000+ complex inpatient cases, checking diagnoses against ICD-10 and DRG standards.</li>
+            <li>Reviewed discharge summaries, lab reports and treatment records to resolve documentation discrepancies.</li>
+            <li>Helped standardise review criteria with clinical and operations teams; tracked audit quality and turnaround in Excel.</li>
+          </ul>
+        </li>
+        <li class="role">
+          <span class="when">Feb 2022</span>
+          <h3>Medical Officer, COVID-19 vaccination drive</h3>
+          <p class="org">Doctors for You, Chennai</p>
+          <ul><li>Supervised medical and administrative staff at a large-scale vaccination camp.</li></ul>
+        </li>
+        <li class="role">
+          <span class="when">Apr 2021 – Oct 2021</span>
+          <h3>Duty Medical Officer</h3>
+          <p class="org">Dr. Rela Institute &amp; Medical Centre, Chennai</p>
+          <ul>
+            <li>Managed 20+ inpatients a day across the HDU, general wards, oncology and day care.</li>
+            <li>Improved EHR documentation quality during JCI accreditation preparation; audited inpatient charts and lab entries for accuracy.</li>
+          </ul>
+        </li>
+        <li class="role">
+          <span class="when">Jan 2019 – Dec 2019</span>
+          <h3>Compulsory Rotating Medical Internship</h3>
+          <p class="org">Meenakshi Mission Hospital and Research Center, Madurai</p>
+          <ul><li>Rotations across major medical and surgical specialties, including diagnostic work-up and inpatient care.</li></ul>
+        </li>
+      </ol>
+    </div>
+  </section>
+
+  <section class="block" id="credentials" aria-labelledby="cred-h">
+    <p class="label">Credentials</p>
+    <div>
+      <h2 id="cred-h">Education &amp; licensure</h2>
+      <dl class="rows">
+        <div class="row"><dt>MBA, Healthcare Management<small>Manipal Academy of Higher Education</small></dt><dd>Expected Apr 2027</dd></div>
+        <div class="row"><dt>Doctor of Medicine (MD), MBBS-equivalent<small>Davao Medical School Foundation, Philippines</small></dt><dd>Dec 2017</dd></div>
+        <div class="row"><dt>BS Biology<small>Davao Medical School Foundation, Philippines</small></dt><dd>Oct 2013</dd></div>
+      </dl>
+      <p class="sub">Registration &amp; certifications</p>
+      <dl class="rows">
+        <div class="row"><dt>Registered Medical Practitioner<small>Tamil Nadu Medical Council · Maldivian Medical Council</small></dt><dd>Details on request</dd></div>
+        <div class="row"><dt>FMGE<small>Foreign Medical Graduate Examination</small></dt><dd>2018</dd></div>
+        <div class="row"><dt>Maldivian Medical Council Licensing Exam</dt><dd>2023</dd></div>
+        <div class="row"><dt>IELTS Academic, band 7.5</dt><dd>Jan 2022</dd></div>
+        <div class="row"><dt>Certificate in Healthcare Management (CPHM)<small>Indian School of Business</small></dt><dd>Jul 2024</dd></div>
+        <div class="row"><dt>AI in Healthcare<small>National Board of Examinations</small></dt><dd>Jun 2026</dd></div>
+      </dl>
+    </div>
+  </section>
+
+  <section class="block" id="contact" aria-labelledby="contact-h">
+    <p class="label">Contact</p>
+    <div>
+      <h2 id="contact-h">Let's talk</h2>
+      <div class="contact-list">
+        <div class="contact-item"><div><span class="k">Email</span><span class="v" id="v-email">dr.issac0307@gmail.com</span></div><button class="btn copy" id="copy-email" data-target="v-email" type="button">Copy</button></div>
+        <div class="contact-item"><div><span class="k">LinkedIn</span><span class="v">linkedin.com/in/issacimmanuel</span></div><a class="btn copy" href="https://linkedin.com/in/issacimmanuel" target="_blank" rel="noopener">Open ↗</a></div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer><div class="wrap">Chennai, Tamil Nadu · Updated November 2026</div></footer>
+
+<script>
+document.querySelectorAll('button.copy').forEach(function (b) {
+  b.addEventListener('click', function () {
+    var el = document.getElementById(b.dataset.target);
+    var text = el.textContent.trim();
+    var done = function () { b.textContent = 'Copied'; b.setAttribute('data-done', ''); setTimeout(function () { b.textContent = 'Copy'; b.removeAttribute('data-done'); }, 1600); };
+    var fallback = function () { var r = document.createRange(); r.selectNodeContents(el); var s = getSelection(); s.removeAllRanges(); s.addRange(r); b.textContent = 'Selected'; };
+    try { navigator.clipboard.writeText(text).then(done, fallback); } catch (e) { fallback(); }
+  });
+});
+</script>
+
+</body>
+</html>
