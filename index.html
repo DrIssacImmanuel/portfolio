@@ -4,321 +4,446 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="description" content="Dr. Issac Immanuel, Medical Officer in Chennai. Inpatient, outpatient and remote clinical practice, plus ICD-10/DRG medical review.">
-<style>*,*::before,*::after{box-sizing:border-box}html{scroll-behavior:smooth}@media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}}body{margin:0}img{max-width:100%}</style>
+<meta name="theme-color" content="#F0DFCC">
 <title>Dr. Issac Immanuel</title>
+<style>html,body{background:#F0DFCC}</style>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&display=swap" rel="stylesheet">
 <link rel="preload" href="fonts/inter.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="preload" href="fonts/bricolage-grotesque.woff2" as="font" type="font/woff2" crossorigin>
 <style>
-@font-face { font-family: "Bricolage Grotesque"; src: url("fonts/bricolage-grotesque.woff2") format("woff2"); font-weight: 200 800; font-style: normal; font-display: swap; }
 @font-face { font-family: "Inter"; src: url("fonts/inter.woff2") format("woff2"); font-weight: 100 900; font-style: normal; font-display: swap; }
 @font-face { font-family: "IBM Plex Mono"; src: url("fonts/ibm-plex-mono-400.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: swap; }
 @font-face { font-family: "IBM Plex Mono"; src: url("fonts/ibm-plex-mono-500.woff2") format("woff2"); font-weight: 500; font-style: normal; font-display: swap; }
-/* Layout: a clinical record. Single reading column, mono chart labels in a left gutter, chronology as the spine. */
+
+/* An ivory sheet with burgundy ink. The hero is the name in a fluid; the rest of the page is a route
+   that draws itself as you scroll, with a map pin at each category and a waypoint at each job.
+   Two hover rules run everywhere: ivory surfaces turn bright white, burgundy turns midnight. */
 :root {
-  --bg: #f4f7f7;
-  --surface: #ffffff;
-  --ink: #10201e;
-  --muted: #566b68;
-  --line: #d6e1df;
-  --accent: #0b7a68;
-  --accent-soft: #dcefeb;
-  --font-display: "Bricolage Grotesque", "Inter", system-ui, sans-serif;
-  --font-body: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
-  --font-mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+  color-scheme: light;
+  --ivory: #F0DFCC;      /* Pantone 11-0907, approx. */
+  --white: #F4F5F0;      /* Pantone 11-0601, approx. */
+  --burgundy: #64313E;   /* Pantone 19-1617, approx. */
+  --midnight: #1F2A44;
+  --ink: #2A1A1E;
+  --muted: #6B5258;
+  --line: rgba(100, 49, 62, .2);
+  --display: "Anton", Impact, "Arial Narrow", sans-serif;
+  --body: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+  --ease: cubic-bezier(.2, .8, .2, 1);
+  --spring: cubic-bezier(.34, 1.56, .64, 1);
+  --gutter: max(20px, env(safe-area-inset-left, 0px), 3.2vw);
+  --g: 8.5rem;           /* the lane the route runs in */
+  --gap: 2rem;
 }
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) {
-    --bg: #0c1615; --surface: #13201e; --ink: #e4eeec; --muted: #93aaa6;
-    --line: #233533; --accent: #4fc7b0; --accent-soft: #173430; color-scheme: dark;
-  }
-}
-:root[data-theme="dark"] {
-  --bg: #0c1615; --surface: #13201e; --ink: #e4eeec; --muted: #93aaa6;
-  --line: #233533; --accent: #4fc7b0; --accent-soft: #173430; color-scheme: dark;
-}
+@media (max-width: 760px) { :root { --g: 2.75rem; --gap: .9rem; } }
+*, *::before, *::after { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { margin: 0; color: var(--ink); font: 400 1rem/1.6 var(--body); -webkit-font-smoothing: antialiased; overflow-x: hidden; }
+a { color: inherit; }
+a:focus-visible, button:focus-visible { outline: 2px solid currentColor; outline-offset: 3px; border-radius: 4px; }
+.mono { font: 500 .72rem/1.5 var(--mono); letter-spacing: .1em; text-transform: uppercase; }
+.wrap { max-width: 72rem; margin: 0 auto; padding-inline: var(--gutter); }
 
-body {
-  background: var(--bg); color: var(--ink);
-  font: 400 1rem/1.6 var(--font-body);
-  -webkit-font-smoothing: antialiased;
-}
-body::before {
-  content: ""; position: fixed; inset: 0 0 auto;
-  height: env(safe-area-inset-top, 0px); z-index: 10;
-  background: color-mix(in srgb, var(--bg) 80%, transparent);
-}
-.wrap {
-  max-width: 60rem; margin: 0 auto;
-  padding-left: max(16px, env(safe-area-inset-left, 0px));
-  padding-right: max(16px, env(safe-area-inset-right, 0px));
-}
-
-/* Nav: translucent material, content scrolls beneath */
+/* Nav */
 .nav {
-  position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5;
-  background: color-mix(in srgb, var(--bg) 78%, transparent);
-  backdrop-filter: blur(18px) saturate(170%);
-  -webkit-backdrop-filter: blur(18px) saturate(170%);
+  position: fixed; inset: 0 0 auto; z-index: 20; display: flex; justify-content: space-between; align-items: center; gap: 1rem;
+  padding: calc(env(safe-area-inset-top, 0px) + 1.15rem) var(--gutter) 1.15rem;
+  color: var(--burgundy); transition: background 300ms ease, box-shadow 300ms ease;
 }
-.nav::after {
-  content: ""; position: absolute; inset: auto 0 -12px; height: 12px; pointer-events: none;
-  background: linear-gradient(var(--bg), transparent); opacity: .6;
-}
-.nav .wrap { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding-block: .8rem; }
-.mark { font: 700 1rem/1 var(--font-display); letter-spacing: -0.01em; color: var(--ink); text-decoration: none; }
-.nav ul { display: flex; gap: 1.25rem; list-style: none; margin: 0; padding: 0; flex-wrap: wrap; }
-.nav a.l { font: 500 .8rem/1 var(--font-mono); color: var(--muted); text-decoration: none; text-transform: uppercase; letter-spacing: .06em; }
-.nav a.l:hover { color: var(--accent); }
-@media (prefers-reduced-transparency: reduce) { .nav { background: var(--bg); backdrop-filter: none; } }
-
-a:focus-visible, button:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 4px; }
+.nav.solid { background: rgba(240, 223, 204, .86); -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px); box-shadow: 0 1px 0 var(--line); }
+.nav a { text-decoration: none; transition: color 200ms ease; }
+.nav a:hover { color: var(--midnight); }
+.nav ul { display: flex; gap: clamp(.9rem, 2.4vw, 2rem); list-style: none; margin: 0; padding: 0; }
+@media (max-width: 520px) { .nav { justify-content: flex-end; } .nav > a { display: none; } }
 
 /* Hero */
-.hero { padding-block: clamp(3rem, 9vw, 6.5rem) clamp(2.5rem, 6vw, 4rem); }
-.eyebrow { font: 500 .78rem/1.4 var(--font-mono); text-transform: uppercase; letter-spacing: .08em; color: var(--accent); margin: 0 0 1.25rem; }
-h1 {
-  font: 700 clamp(2.5rem, 7.5vw, 5rem)/1.02 var(--font-display);
-  letter-spacing: -0.035em; margin: 0; text-wrap: balance;
-}
-h1 .soft { color: var(--muted); font-weight: 500; }
-.lede { font-size: clamp(1.05rem, 2vw, 1.2rem); line-height: 1.55; color: var(--muted); max-width: 38rem; margin: 1.5rem 0 0; text-wrap: pretty; }
-.lede strong { color: var(--ink); font-weight: 600; }
+.hero { position: relative; height: 100svh; min-height: 30rem; background: var(--ivory); color: var(--burgundy); overflow: hidden; display: grid; place-items: center; touch-action: pan-y; }
+.hero canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+.hero h1 { position: relative; margin: 0; text-align: center; text-transform: uppercase; font: 400 min(21vw, 33svh)/.98 var(--display); user-select: none; }
+.hero h1 span { display: block; }
+.hero.fx h1 { color: transparent; }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+/* quick introduction, set as wallpaper: rows drift at different speeds and sit at different depths under the pointer */
+.words { position: absolute; inset: 0; display: flex; flex-direction: column; justify-content: space-between; padding-block: 4.25rem 4.75rem; overflow: hidden; pointer-events: none; }
+.wr { white-space: nowrap; font: 400 clamp(2.4rem, 10.5svh, 6.5rem)/1 var(--display); text-transform: uppercase; color: var(--burgundy); opacity: .075;
+  transform: translate3d(calc(var(--px, 0) * var(--d, 1) * -46px), calc(var(--py, 0) * var(--d, 1) * -22px), 0); transition: transform 900ms var(--ease); }
+.wr:nth-child(even) { color: transparent; -webkit-text-stroke: 1.5px var(--burgundy); opacity: .2; }
+.wr span { display: inline-block; padding-right: .5em; animation: drift var(--t, 80s) linear infinite; }
+.wr:nth-child(even) span { animation-direction: reverse; }
+@keyframes drift { to { transform: translateX(-100%); } }
+.corner { position: absolute; z-index: 2; bottom: max(1.6rem, env(safe-area-inset-bottom, 0px)); pointer-events: none; }
+.corner.bl { left: var(--gutter); }
+.corner.bl::before { content: ""; display: block; width: 1.6rem; height: 1px; background: currentColor; margin-bottom: .9rem; }
+.corner.br { right: var(--gutter); text-align: right; }
 
-.actions { display: flex; flex-wrap: wrap; gap: .75rem; margin-top: 2rem; }
+/* The journey */
+.journey { position: relative; background: var(--ivory); overflow-x: clip; }
+.route { position: absolute; left: 0; top: 0; pointer-events: none; z-index: 0; overflow: visible; }
+.route path { fill: none; stroke-linecap: round; stroke-linejoin: round; }
+.route .track { stroke: rgba(100, 49, 62, .3); stroke-width: 2.5; stroke-dasharray: .1 9; }
+.route .done { stroke: var(--burgundy); stroke-width: 3; }
+.tip { position: absolute; left: 0; top: 0; width: 16px; height: 16px; margin: -8px 0 0 -8px; border-radius: 50%; background: var(--burgundy); z-index: 3; pointer-events: none; opacity: 0; transition: opacity 300ms ease; }
+.tip.live { opacity: 1; }
+.tip::after { content: ""; position: absolute; inset: 0; border-radius: 50%; border: 2px solid var(--burgundy); animation: ping 1.6s ease-out infinite; }
+@keyframes ping { from { transform: scale(1); opacity: .8; } to { transform: scale(3.2); opacity: 0; } }
+
+section { scroll-margin-top: 3.5rem; }
+.sec { padding-block: clamp(3rem, 7vw, 5.5rem); position: relative; }
+.sec > .wrap { display: grid; grid-template-columns: var(--g) minmax(0, 1fr); gap: var(--gap); }
+.gut { position: relative; display: flex; justify-content: center; align-items: flex-start; }
+.label { color: var(--burgundy); margin: 0 0 .7rem; }
+h2 { font: 400 clamp(2.2rem, 6vw, 4.2rem)/1 var(--display); text-transform: uppercase; letter-spacing: .005em; color: var(--burgundy); margin: 0 0 clamp(1.5rem, 3vw, 2.5rem); text-wrap: balance; transition: color 110ms ease; }
+
+/* Map pins: one per category. The route arrives at the point of the pin. */
+.pin { width: clamp(2.3rem, 5vw, 3.4rem); z-index: 2; position: relative; }
+.pin svg { display: block; width: 100%; height: auto; overflow: visible; transform-origin: 50% 100%; }
+.pin .body { fill: var(--burgundy); transition: fill 110ms ease; }
+.pin .eye { fill: var(--ivory); }
+.pin text { font: 400 17px var(--display); fill: var(--burgundy); text-anchor: middle; transition: fill 110ms ease; }
+.sec:hover .pin .body, .sec:hover .pin text { fill: var(--midnight); }
+.sec:hover h2 { color: var(--midnight); }
+.start { width: 14px; height: 14px; border-radius: 50%; background: var(--burgundy); z-index: 2; position: relative; margin-top: .25rem; }
+
+/* Intro */
+.intro { padding-top: clamp(3.5rem, 8vw, 6rem); }
+.lede { font-size: clamp(1.25rem, 2.6vw, 2rem); line-height: 1.32; letter-spacing: -.012em; max-width: 46rem; margin: 0; text-wrap: pretty; }
+.lede strong { color: var(--burgundy); font-weight: 600; }
+.actions { display: flex; flex-wrap: wrap; gap: .75rem; margin-top: 2.25rem; }
 .btn {
-  display: inline-flex; align-items: center; gap: .5rem;
-  font: 500 .92rem/1 var(--font-body); padding: .8rem 1.1rem; border-radius: 999px;
-  border: 1px solid var(--line); background: var(--surface); color: var(--ink);
-  text-decoration: none; cursor: pointer;
-  transition: transform 120ms ease-out, border-color 160ms ease, background 160ms ease;
+  display: inline-flex; align-items: center; gap: .5rem; font: 500 .72rem/1 var(--mono); letter-spacing: .1em; text-transform: uppercase;
+  padding: 1rem 1.35rem; border-radius: 999px; border: 0; cursor: pointer; text-decoration: none;
+  background: var(--burgundy); color: var(--ivory); transition: background 240ms ease, color 240ms ease, box-shadow 240ms ease, transform 160ms var(--spring);
 }
-.btn:hover { border-color: var(--accent); }
-.btn:active { transform: scale(0.97); transition-duration: 60ms; }
-.btn.primary { background: var(--accent); color: var(--bg); border-color: var(--accent); }
+.btn:hover { background: var(--midnight); }
+.btn:active { transform: scale(.96); }
+.btn.ghost { background: transparent; color: var(--burgundy); box-shadow: inset 0 0 0 1px var(--burgundy); }
+.btn.ghost:hover { color: var(--midnight); box-shadow: inset 0 0 0 1px var(--midnight); background: var(--white); }
 
-/* Vitals strip: the numbers from practice */
-.vitals {
-  display: grid; grid-template-columns: repeat(4, minmax(0, 1fr));
-  border-top: 1px solid var(--line); border-bottom: 1px solid var(--line);
-  margin-top: clamp(2.5rem, 6vw, 4rem);
-}
-.vital { padding: 1.1rem 1rem 1.2rem 0; min-width: 0; }
-.vital + .vital { padding-left: 1rem; border-left: 1px solid var(--line); }
-.vital b { display: block; font: 700 clamp(1.6rem, 3.6vw, 2.2rem)/1.1 var(--font-display); letter-spacing: -0.02em; font-variant-numeric: tabular-nums; }
-.vital span { display: block; font: 400 .8rem/1.4 var(--font-mono); color: var(--muted); margin-top: .35rem; }
-@media (max-width: 640px) {
-  .vitals { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .vital:nth-child(3) { padding-left: 0; border-left: 0; }
-  .vital:nth-child(n+3) { border-top: 1px solid var(--line); }
-}
+.vitals { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: .75rem; margin-top: clamp(2.5rem, 6vw, 4rem); }
+.vital { padding: 1.2rem 1.1rem 1.3rem; border: 1px solid var(--line); border-radius: 14px; transition: background 110ms ease, transform 260ms var(--spring); min-width: 0; }
+.vital b { display: block; font: 400 clamp(2rem, 4.6vw, 3.4rem)/1 var(--display); color: var(--burgundy); text-transform: uppercase; font-variant-numeric: tabular-nums; transition: color 110ms ease; }
+.vital span { display: block; font: 400 .76rem/1.4 var(--mono); color: var(--muted); margin-top: .6rem; }
+.vital b span { display: inline; font: inherit; color: inherit; margin: 0; }
+.vital:hover { background: var(--white); }
+.vital:hover b { color: var(--midnight); }
+@media (max-width: 900px) { .vitals { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 
-/* Sections: mono label in a gutter */
-section.block { display: grid; grid-template-columns: 11rem minmax(0, 1fr); gap: 2rem; padding-block: clamp(2.5rem, 6vw, 4rem); border-top: 1px solid var(--line); scroll-margin-top: 4rem; }
-.label { font: 500 .78rem/1.5 var(--font-mono); text-transform: uppercase; letter-spacing: .08em; color: var(--muted); margin: .35rem 0 0; }
-h2 { font: 700 clamp(1.5rem, 3vw, 1.9rem)/1.15 var(--font-display); letter-spacing: -0.02em; margin: 0 0 1.25rem; text-wrap: balance; }
-@media (max-width: 720px) { section.block { grid-template-columns: minmax(0, 1fr); gap: .5rem; } }
+/* A · Skills: cards */
+.skills { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .75rem; }
+.skill { padding: 1.3rem 1.25rem 1.4rem; border: 1px solid var(--line); border-radius: 14px; transition: background 110ms ease, transform 260ms var(--spring); }
+.skill h3 { font: 600 1.05rem/1.3 var(--body); color: var(--burgundy); margin: 0 0 .4rem; transition: color 110ms ease; }
+.skill p { margin: 0; color: var(--muted); font-size: .95rem; }
+.skill:hover { background: var(--white); }
+.skill:hover h3 { color: var(--midnight); }
+@media (max-width: 640px) { .skills { grid-template-columns: minmax(0, 1fr); } }
 
-/* Skills */
-.skills { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.5rem 2rem; }
-.skills h3 { font: 600 1rem/1.3 var(--font-body); margin: 0 0 .35rem; }
-.skills p { margin: 0; color: var(--muted); font-size: .95rem; }
-@media (max-width: 560px) { .skills { grid-template-columns: minmax(0, 1fr); } }
+/* B · Experience: waypoints on the route */
+.timeline { list-style: none; margin: 0; padding: 0; }
+.role { position: relative; display: grid; grid-template-columns: 9.5rem minmax(0, 1fr); gap: .4rem 1.5rem; padding: 1.4rem 1.25rem 1.5rem; margin-bottom: .75rem; border: 1px solid var(--line); border-radius: 14px; transition: background 110ms ease; }
+.role:hover { background: var(--white); }
+.way { position: absolute; top: 1.7rem; left: calc(-1 * (var(--gap) + var(--g) * .26) - 9px); width: 18px; height: 18px; border-radius: 50%; background: var(--ivory); border: 3px solid var(--burgundy); z-index: 2; transition: border-color 110ms ease, background 110ms ease; }
+.role:nth-child(even) .way { left: calc(-1 * (var(--gap) + var(--g) * .74) - 9px); }
+.role:hover .way { border-color: var(--midnight); background: var(--midnight); }
+.when { font: 400 .78rem/1.5 var(--mono); color: var(--muted); font-variant-numeric: tabular-nums; padding-top: .3rem; }
+.when .no { display: block; color: var(--burgundy); font-weight: 500; letter-spacing: .1em; }
+.role h3 { font: 600 1.12rem/1.35 var(--body); color: var(--burgundy); margin: 0; transition: color 110ms ease; }
+.role:hover h3 { color: var(--midnight); }
+.org { color: var(--muted); font-size: .95rem; margin: .1rem 0 .3rem; }
+.tag { display: inline-block; font: 500 .66rem/1 var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--ivory); background: var(--burgundy); padding: .32rem .5rem; border-radius: 3px; margin-left: .4rem; vertical-align: .18em; transition: background 110ms ease; }
+.role:hover .tag { background: var(--midnight); }
+.role ul { grid-column: 1 / -1; margin: .1rem 0 0; padding-left: 1.1rem; list-style: disc; }
+.role li { margin: .3rem 0; }
+.role li::marker { color: var(--burgundy); }
+@media (max-width: 700px) { .role { grid-template-columns: minmax(0, 1fr); padding: 1.1rem 1rem 1.2rem; } .when { padding-top: 0; } .when .no { display: inline; margin-right: .6rem; } }
 
-/* Timeline: real chronology, newest first */
-.timeline { list-style: none; margin: 0; padding: 0; position: relative; }
-.timeline::before { content: ""; position: absolute; left: 5px; top: .6rem; bottom: .6rem; width: 1px; background: var(--line); }
-.role { position: relative; padding-left: 2rem; padding-bottom: 2.25rem; }
-.role:last-child { padding-bottom: 0; }
-.role::before {
-  content: ""; position: absolute; left: 0; top: .45rem; width: 11px; height: 11px; border-radius: 50%;
-  background: var(--bg); border: 2px solid var(--accent);
-}
-.role.current::before { background: var(--accent); }
-.when { font: 400 .8rem/1.4 var(--font-mono); color: var(--muted); font-variant-numeric: tabular-nums; }
-.role h3 { font: 600 1.08rem/1.35 var(--font-body); margin: .25rem 0 0; }
-.org { color: var(--muted); font-size: .95rem; margin: .1rem 0 .6rem; }
-.tag { display: inline-block; font: 500 .7rem/1 var(--font-mono); text-transform: uppercase; letter-spacing: .06em; color: var(--accent); background: var(--accent-soft); padding: .3rem .5rem; border-radius: 4px; margin-left: .4rem; vertical-align: .15em; }
-.role ul { margin: 0; padding-left: 1.1rem; color: var(--ink); }
-.role li { margin: .3rem 0; max-width: 40rem; }
-.role li::marker { color: var(--muted); }
-
-/* Education & licences */
-.rows { display: grid; gap: 0; margin: 0; }
-.row { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 1rem; padding: .85rem 0; border-bottom: 1px solid var(--line); align-items: baseline; }
-.row:first-child { padding-top: 0; }
-.row dt { font-weight: 600; margin: 0; }
+/* C · Credentials: rows */
+.rows { margin: 0; border-top: 1px solid var(--line); }
+.row { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 1rem; padding: 1rem 1.25rem; border-bottom: 1px solid var(--line); align-items: baseline; transition: background 110ms ease; }
+.row:hover { background: var(--white); }
+.row dt { font-weight: 600; color: var(--burgundy); transition: color 110ms ease; }
+.row:hover dt { color: var(--midnight); }
 .row dt small { display: block; font-weight: 400; color: var(--muted); font-size: .92rem; margin-top: .1rem; }
-.row dd { margin: 0; font: 400 .82rem/1.4 var(--font-mono); color: var(--muted); white-space: nowrap; font-variant-numeric: tabular-nums; }
-.sub { font: 500 .78rem/1.5 var(--font-mono); text-transform: uppercase; letter-spacing: .08em; color: var(--muted); margin: 2.25rem 0 .75rem; }
+.row dd { margin: 0; font: 400 .78rem/1.5 var(--mono); color: var(--muted); white-space: nowrap; font-variant-numeric: tabular-nums; }
+.sub { color: var(--burgundy); margin: 2.75rem 0 .9rem; }
+@media (max-width: 560px) { .row { grid-template-columns: minmax(0, 1fr); gap: .15rem; padding-inline: .5rem; } }
 
-/* Contact */
-.contact-list { display: grid; gap: .75rem; }
-.contact-item { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: .75rem; padding: 1rem 1.1rem; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; }
-.contact-item .k { font: 500 .75rem/1 var(--font-mono); text-transform: uppercase; letter-spacing: .08em; color: var(--muted); display: block; margin-bottom: .35rem; }
-.contact-item .v { font-weight: 500; user-select: all; word-break: break-all; }
-.copy { font: 500 .8rem/1 var(--font-body); padding: .55rem .85rem; }
-.copy[data-done] { color: var(--accent); border-color: var(--accent); }
+/* Next stop */
+.next { padding-bottom: clamp(4rem, 9vw, 7rem); }
+.next h2 { margin-bottom: 1.5rem; }
 
-footer { border-top: 1px solid var(--line); padding-block: 2rem 3rem; color: var(--muted); font: 400 .8rem/1.5 var(--font-mono); }
+/* Contact: the one burgundy field */
+.contact { background: var(--burgundy); color: var(--ivory); padding-block: clamp(4rem, 10vw, 8rem) 0; }
+.contact h2 { color: var(--ivory); font-size: clamp(3.6rem, 17vw, 15rem); line-height: .92; margin-bottom: clamp(2rem, 5vw, 3.5rem); }
+.contact-list { border-top: 1px solid rgba(240, 223, 204, .28); }
+.contact-item { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: .9rem; padding: 1.35rem 0; border-bottom: 1px solid rgba(240, 223, 204, .28); }
+.contact-item .k { display: block; opacity: .7; margin-bottom: .35rem; }
+.contact-item .v { font-size: clamp(1.05rem, 2.6vw, 1.5rem); font-weight: 500; user-select: all; word-break: break-all; }
+.contact .btn { background: var(--ivory); color: var(--burgundy); }
+.contact .btn:hover { background: var(--midnight); color: var(--ivory); }
+.contact .btn[data-done] { background: var(--white); color: var(--midnight); }
+footer { padding-block: 2rem max(2.25rem, env(safe-area-inset-bottom, 0px)); display: flex; flex-wrap: wrap; justify-content: space-between; gap: .5rem; opacity: .75; }
 
-/* One orchestrated moment: hero arrives in sequence */
-@media (prefers-reduced-motion: no-preference) {
-  .hero > * { animation: rise 600ms cubic-bezier(.2,.8,.2,1) both; }
-  .hero > :nth-child(2) { animation-delay: 60ms; }
-  .hero > :nth-child(3) { animation-delay: 120ms; }
-  .hero > :nth-child(4) { animation-delay: 180ms; }
-  .hero > :nth-child(5) { animation-delay: 240ms; }
-  @keyframes rise { from { transform: translateY(10px); opacity: .4; } to { transform: none; opacity: 1; } }
+/* Reveals. Everything below is armed only when the script has started (.fxon), so content can never stay hidden.
+   Each stop switches on when the route reaches it; each category arrives in its own way. */
+.fxon [data-reveal] .pin svg { transform: translateY(-140%) scale(.6); opacity: 0; transition: transform 700ms var(--spring), opacity 200ms ease; }
+.fxon [data-reveal].on .pin svg { transform: none; opacity: 1; }
+.fxon [data-reveal] .start, .fxon .role .way { transform: scale(0); transition: transform 500ms var(--spring), border-color 110ms ease, background 110ms ease; }
+.fxon [data-reveal].on .start, .fxon .role.on .way { transform: scale(1); }
+.fxon .sec .label, .fxon .sec h2, .fxon .intro .lede, .fxon .intro .actions { opacity: 0; transform: translateY(22px); transition: opacity 700ms var(--ease), transform 700ms var(--ease), color 110ms ease; }
+.fxon .sec h2 { transition-delay: 90ms; }
+.fxon .intro .actions { transition-delay: 160ms; }
+.fxon .sec.on .label, .fxon .sec.on h2, .fxon .intro.on .lede, .fxon .intro.on .actions { opacity: 1; transform: none; }
+/* numbers and skill cards: dealt onto the table */
+.fxon .vital, .fxon .skill { opacity: 0; transform: translateY(30px) rotate(var(--tilt, -5deg)) scale(.92); transition: opacity 500ms ease, transform 750ms var(--spring), background 110ms ease; transition-delay: calc(var(--i, 0) * 90ms + 200ms); }
+.fxon .vital:nth-child(even), .fxon .skill:nth-child(even) { --tilt: 5deg; }
+.fxon .sec.on .vital, .fxon .sec.on .skill { opacity: 1; transform: none; }
+.fxon .sec.on .vital:hover, .fxon .sec.on .skill:hover { transition-delay: 0ms; }
+/* jobs: each one slides in off the road as its waypoint lights */
+.fxon .role { opacity: 0; transition: opacity 600ms ease, background 110ms ease; }
+.fxon .role > .when, .fxon .role > div, .fxon .role > ul { transform: translateX(64px); transition: transform 850ms var(--ease); }
+.fxon .role > div { transition-delay: 70ms; }
+.fxon .role > ul { transition-delay: 140ms; }
+.fxon .role.on { opacity: 1; }
+.fxon .role.on > .when, .fxon .role.on > div, .fxon .role.on > ul { transform: none; }
+/* credentials: rows unroll left to right */
+.fxon .row { clip-path: inset(0 100% 0 0); transition: clip-path 800ms var(--ease) calc(var(--i, 0) * 80ms + 250ms), background 110ms ease; }
+.fxon .sec.on .row { clip-path: inset(0 0 0 0); }
+.fxon .sub, .fxon .next .btn { opacity: 0; transition: opacity 700ms ease 500ms, background 240ms ease, transform 160ms var(--spring); }
+.fxon .sec.on .sub, .fxon .next.on .btn { opacity: 1; }
+.js .reveal { opacity: 0; transform: translateY(18px); transition: opacity 700ms var(--ease), transform 700ms var(--ease); }
+.js .reveal.in { opacity: 1; transform: none; }
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .js .reveal { opacity: 1; transform: none; }
+  .tip::after { animation: none; }
+  .wr span { animation: none; }
+  * { transition-duration: 1ms !important; transition-delay: 0ms !important; }
 }
-@media (prefers-reduced-motion: reduce) { .btn { transition: none; } }
 </style>
 </head>
 <body>
 
-<nav class="nav" aria-label="Sections">
-  <div class="wrap">
-    <a class="mark" href="#top">Dr. Issac Immanuel</a>
-    <ul>
-      <li><a class="l" href="#experience">Experience</a></li>
-      <li><a class="l" href="#credentials">Credentials</a></li>
-      <li><a class="l" href="#contact">Contact</a></li>
-    </ul>
-  </div>
+<nav class="nav mono" aria-label="Sections">
+  <a href="#top">Chennai, India</a>
+  <ul>
+    <li><a href="#experience">Experience</a></li>
+    <li><a href="#credentials">Credentials</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
 </nav>
 
-<main class="wrap" id="top">
-  <header class="hero">
-    <p class="eyebrow">Medical Officer · Chennai, India</p>
-    <h1>Dr. Issac Immanuel <span class="soft">Manickaraj Enoch Margasis</span></h1>
-    <p class="lede">Physician with <strong>5+ years</strong> across inpatient wards, high-volume outpatient care and remote resort medicine, plus a year auditing inpatient cases against <strong>ICD-10 and DRG</strong> standards. Now completing an MBA in Healthcare Management.</p>
-    <div class="actions">
-      <a class="btn primary" href="#contact">Get in touch</a>
-      <a class="btn" href="https://linkedin.com/in/issacimmanuel" target="_blank" rel="noopener">LinkedIn ↗</a>
-    </div>
-    <div class="vitals" role="list">
-      <div class="vital" role="listitem"><b>5+ yrs</b><span>clinical &amp; review experience</span></div>
-      <div class="vital" role="listitem"><b>60–80</b><span>outpatients / day at ECHS</span></div>
-      <div class="vital" role="listitem"><b>1,000+</b><span>inpatient cases audited</span></div>
-      <div class="vital" role="listitem"><b>2</b><span>medical council registrations</span></div>
-    </div>
-  </header>
+<header class="hero" id="top">
+  <div class="words" aria-hidden="true"></div>
+  <canvas aria-hidden="true"></canvas>
+  <h1><span>Dr. Issac</span><span>Immanuel</span></h1>
+  <p class="sr">Doctor. Health tech enthusiast. Medical reviewer. MBA candidate. Island medic. Veterans' physician. AI in healthcare.</p>
+  <p class="corner bl mono">Clinical practice<br>&amp; medical review</p>
+  <p class="corner br mono">The route so far ↓</p>
+</header>
 
-  <section class="block" id="skills" aria-labelledby="skills-h">
-    <p class="label">Clinical skills</p>
-    <div>
-      <h2 id="skills-h">From the HDU to the resort clinic</h2>
-      <div class="skills">
-        <div><h3>Inpatient care</h3><p>HDU, general ward, oncology and day-care management; daily rounds and inpatient documentation.</p></div>
-        <div><h3>Outpatient &amp; chronic care</h3><p>High-volume OPD, non-communicable disease management, diagnostic work-up, lab interpretation and prescribing.</p></div>
-        <div><h3>Emergency &amp; preventive care</h3><p>First-line emergency management in remote clinics, health screening and site emergency preparedness.</p></div>
-        <div><h3>Documentation &amp; coding</h3><p>EHR documentation, longitudinal records, ICD-10 coding, SOP compliance and JCI documentation standards.</p></div>
+<main class="journey">
+  <svg class="route" aria-hidden="true"><path class="track"/><path class="done"/></svg>
+  <div class="tip" aria-hidden="true"></div>
+
+  <section class="sec intro" data-reveal aria-label="Introduction">
+    <div class="wrap">
+      <div class="gut"><span class="start" data-stop></span></div>
+      <div>
+        <p class="label mono">Issac Immanuel Manickaraj Enoch Margasis</p>
+        <p class="lede">Physician with <strong>5+ years</strong> across inpatient wards, high-volume outpatient care and remote resort medicine, plus a year auditing inpatient cases against <strong>ICD-10 and DRG</strong> standards. Now completing an MBA in Healthcare Management.</p>
+        <div class="vitals" role="list">
+          <div class="vital" role="listitem"><b><span data-count="5">5</span>+ yrs</b><span>clinical &amp; review experience</span></div>
+          <div class="vital" role="listitem"><b>60–80</b><span>outpatients / day at ECHS</span></div>
+          <div class="vital" role="listitem"><b><span data-count="1000">1,000</span>+</b><span>inpatient cases audited</span></div>
+          <div class="vital" role="listitem"><b><span data-count="2">2</span></b><span>medical council registrations</span></div>
+        </div>
       </div>
     </div>
   </section>
 
-  <section class="block" id="experience" aria-labelledby="exp-h">
-    <p class="label">Experience</p>
-    <div>
-      <h2 id="exp-h">Where I've practised</h2>
-      <ol class="timeline">
-        <li class="role">
-          <span class="when">Nov 2025 – Oct 2026</span>
-          <h3>Medical Officer</h3>
-          <p class="org">Ex-Servicemen Contributory Health Scheme (ECHS), Chennai</p>
-          <ul>
-            <li>Primary point of care for Army veterans, seeing 60–80 outpatients a day and managing chronic non-communicable diseases through regular review of history, examination and lab panels.</li>
-            <li>Kept protocol-compliant documentation and longitudinal patient records under ECHS standards.</li>
-          </ul>
-        </li>
-        <li class="role">
-          <span class="when">Jul 2025 – Nov 2025</span>
-          <h3>Junior Resident</h3>
-          <p class="org">Saveetha Medical College and Hospital, Chennai</p>
-          <ul>
-            <li>Ran consultations, interpreted investigations and performed minor outpatient surgical procedures.</li>
-            <li>Documented encounters in the hospital's in-house EHR.</li>
-          </ul>
-        </li>
-        <li class="role">
-          <span class="when">Mar 2023 – Jun 2025</span>
-          <h3>Medical Officer</h3>
-          <p class="org">Island Health Solutions Pvt Ltd, Malé, Maldives</p>
-          <ul>
-            <li>Ran independent clinics across multiple resort clusters, seeing 20+ patients a day across emergencies, routine care and health screening.</li>
-            <li>Responsible for emergency preparedness at each site, plus diagnosis, lab evaluation, prescribing and medical records.</li>
-          </ul>
-        </li>
-        <li class="role">
-          <span class="when">Apr 2022 – Feb 2023</span>
-          <h3>Assistant Manager, Physician Reviews <span class="tag">Medical review</span></h3>
-          <p class="org">EXL Service (Health), Chennai</p>
-          <ul>
-            <li>Medical-necessity and quality reviews on 1,000+ complex inpatient cases, checking diagnoses against ICD-10 and DRG standards.</li>
-            <li>Reviewed discharge summaries, lab reports and treatment records to resolve documentation discrepancies.</li>
-            <li>Helped standardise review criteria with clinical and operations teams; tracked audit quality and turnaround in Excel.</li>
-          </ul>
-        </li>
-        <li class="role">
-          <span class="when">Feb 2022</span>
-          <h3>Medical Officer, COVID-19 vaccination drive</h3>
-          <p class="org">Doctors for You, Chennai</p>
-          <ul><li>Supervised medical and administrative staff at a large-scale vaccination camp.</li></ul>
-        </li>
-        <li class="role">
-          <span class="when">Apr 2021 – Oct 2021</span>
-          <h3>Duty Medical Officer</h3>
-          <p class="org">Dr. Rela Institute &amp; Medical Centre, Chennai</p>
-          <ul>
-            <li>Managed 20+ inpatients a day across the HDU, general wards, oncology and day care.</li>
-            <li>Improved EHR documentation quality during JCI accreditation preparation; audited inpatient charts and lab entries for accuracy.</li>
-          </ul>
-        </li>
-        <li class="role">
-          <span class="when">Jan 2019 – Dec 2019</span>
-          <h3>Compulsory Rotating Medical Internship</h3>
-          <p class="org">Meenakshi Mission Hospital and Research Center, Madurai</p>
-          <ul><li>Rotations across major medical and surgical specialties, including diagnostic work-up and inpatient care.</li></ul>
-        </li>
-      </ol>
+  <section class="sec" id="skills" data-reveal aria-labelledby="skills-h">
+    <div class="wrap">
+      <div class="gut"><span class="pin" data-stop="pin"><svg viewBox="0 0 48 64"><path class="body" d="M24 63C24 63 3 38 3 24a21 21 0 1 1 42 0c0 14-21 39-21 39z"/><circle class="eye" cx="24" cy="24" r="12.5"/></svg></span></div>
+      <div>
+        <p class="label mono">Clinical skills</p>
+        <h2 id="skills-h">From the HDU to the resort clinic</h2>
+        <div class="skills">
+          <div class="skill"><h3>Inpatient care</h3><p>HDU, general ward, oncology and day-care management; daily rounds and inpatient documentation.</p></div>
+          <div class="skill"><h3>Outpatient &amp; chronic care</h3><p>High-volume OPD, non-communicable disease management, diagnostic work-up, lab interpretation and prescribing.</p></div>
+          <div class="skill"><h3>Emergency &amp; preventive care</h3><p>First-line emergency management in remote clinics, health screening and site emergency preparedness.</p></div>
+          <div class="skill"><h3>Documentation &amp; coding</h3><p>EHR documentation, longitudinal records, ICD-10 coding, SOP compliance and JCI documentation standards.</p></div>
+        </div>
+      </div>
     </div>
   </section>
 
-  <section class="block" id="credentials" aria-labelledby="cred-h">
-    <p class="label">Credentials</p>
-    <div>
-      <h2 id="cred-h">Education &amp; licensure</h2>
-      <dl class="rows">
-        <div class="row"><dt>MBA, Healthcare Management<small>Manipal Academy of Higher Education</small></dt><dd>Expected Apr 2027</dd></div>
-        <div class="row"><dt>Doctor of Medicine (MD), MBBS-equivalent<small>Davao Medical School Foundation, Philippines</small></dt><dd>Dec 2017</dd></div>
-        <div class="row"><dt>BS Biology<small>Davao Medical School Foundation, Philippines</small></dt><dd>Oct 2013</dd></div>
-      </dl>
-      <p class="sub">Registration &amp; certifications</p>
-      <dl class="rows">
-        <div class="row"><dt>Registered Medical Practitioner<small>Tamil Nadu Medical Council · Maldivian Medical Council</small></dt><dd>Details on request</dd></div>
-        <div class="row"><dt>FMGE<small>Foreign Medical Graduate Examination</small></dt><dd>2018</dd></div>
-        <div class="row"><dt>Maldivian Medical Council Licensing Exam</dt><dd>2023</dd></div>
-        <div class="row"><dt>IELTS Academic, band 7.5</dt><dd>Jan 2022</dd></div>
-        <div class="row"><dt>Certificate in Healthcare Management (CPHM)<small>Indian School of Business</small></dt><dd>Jul 2024</dd></div>
-        <div class="row"><dt>AI in Healthcare<small>National Board of Examinations</small></dt><dd>Jun 2026</dd></div>
-      </dl>
+  <section class="sec" id="experience" data-reveal aria-labelledby="exp-h">
+    <div class="wrap">
+      <div class="gut"><span class="pin" data-stop="pin"><svg viewBox="0 0 48 64"><path class="body" d="M24 63C24 63 3 38 3 24a21 21 0 1 1 42 0c0 14-21 39-21 39z"/><circle class="eye" cx="24" cy="24" r="12.5"/></svg></span></div>
+      <div>
+        <p class="label mono">Experience · seven stops, oldest first</p>
+        <h2 id="exp-h">Where I've practised</h2>
+        <ol class="timeline">
+          <li class="role" data-reveal>
+            <span class="way" data-stop></span>
+            <span class="when"><span class="no">01</span>Jan 2019 – Dec 2019</span>
+            <div>
+              <h3>Compulsory Rotating Medical Internship</h3>
+              <p class="org">Meenakshi Mission Hospital and Research Center, Madurai</p>
+            </div>
+            <ul><li>Rotations across major medical and surgical specialties, including diagnostic work-up and inpatient care.</li></ul>
+          </li>
+          <li class="role" data-reveal>
+            <span class="way" data-stop></span>
+            <span class="when"><span class="no">02</span>Apr 2021 – Oct 2021</span>
+            <div>
+              <h3>Duty Medical Officer</h3>
+              <p class="org">Dr. Rela Institute &amp; Medical Centre, Chennai</p>
+            </div>
+            <ul>
+                <li>Managed 20+ inpatients a day across the HDU, general wards, oncology and day care.</li>
+                <li>Improved EHR documentation quality during JCI accreditation preparation; audited inpatient charts and lab entries for accuracy.</li>
+              </ul>
+          </li>
+          <li class="role" data-reveal>
+            <span class="way" data-stop></span>
+            <span class="when"><span class="no">03</span>Feb 2022</span>
+            <div>
+              <h3>Medical Officer, COVID-19 vaccination drive</h3>
+              <p class="org">Doctors for You, Chennai</p>
+            </div>
+            <ul><li>Supervised medical and administrative staff at a large-scale vaccination camp.</li></ul>
+          </li>
+          <li class="role" data-reveal>
+            <span class="way" data-stop></span>
+            <span class="when"><span class="no">04</span>Apr 2022 – Feb 2023</span>
+            <div>
+              <h3>Assistant Manager, Physician Reviews <span class="tag">Medical review</span></h3>
+              <p class="org">EXL Service (Health), Chennai</p>
+            </div>
+            <ul>
+                <li>Medical-necessity and quality reviews on 1,000+ complex inpatient cases, checking diagnoses against ICD-10 and DRG standards.</li>
+                <li>Reviewed discharge summaries, lab reports and treatment records to resolve documentation discrepancies.</li>
+                <li>Helped standardise review criteria with clinical and operations teams; tracked audit quality and turnaround in Excel.</li>
+              </ul>
+          </li>
+          <li class="role" data-reveal>
+            <span class="way" data-stop></span>
+            <span class="when"><span class="no">05</span>Mar 2023 – Jun 2025</span>
+            <div>
+              <h3>Medical Officer</h3>
+              <p class="org">Island Health Solutions Pvt Ltd, Malé, Maldives</p>
+            </div>
+            <ul>
+                <li>Ran independent clinics across multiple resort clusters, seeing 20+ patients a day across emergencies, routine care and health screening.</li>
+                <li>Responsible for emergency preparedness at each site, plus diagnosis, lab evaluation, prescribing and medical records.</li>
+              </ul>
+          </li>
+          <li class="role" data-reveal>
+            <span class="way" data-stop></span>
+            <span class="when"><span class="no">06</span>Jul 2025 – Nov 2025</span>
+            <div>
+              <h3>Junior Resident</h3>
+              <p class="org">Saveetha Medical College and Hospital, Chennai</p>
+            </div>
+            <ul>
+                <li>Ran consultations, interpreted investigations and performed minor outpatient surgical procedures.</li>
+                <li>Documented encounters in the hospital's in-house EHR.</li>
+              </ul>
+          </li>
+          <li class="role" data-reveal>
+            <span class="way" data-stop></span>
+            <span class="when"><span class="no">07</span>Nov 2025 – Oct 2026</span>
+            <div>
+              <h3>Medical Officer</h3>
+              <p class="org">Ex-Servicemen Contributory Health Scheme (ECHS), Chennai</p>
+            </div>
+            <ul>
+                <li>Primary point of care for Army veterans, seeing 60–80 outpatients a day and managing chronic non-communicable diseases through regular review of history, examination and lab panels.</li>
+                <li>Kept protocol-compliant documentation and longitudinal patient records under ECHS standards.</li>
+              </ul>
+          </li>
+        </ol>
+      </div>
     </div>
   </section>
 
-  <section class="block" id="contact" aria-labelledby="contact-h">
-    <p class="label">Contact</p>
-    <div>
-      <h2 id="contact-h">Let's talk</h2>
-      <div class="contact-list">
-        <div class="contact-item"><div><span class="k">Email</span><span class="v" id="v-email">dr.issac0307@gmail.com</span></div><button class="btn copy" id="copy-email" data-target="v-email" type="button">Copy</button></div>
-        <div class="contact-item"><div><span class="k">LinkedIn</span><span class="v">linkedin.com/in/issacimmanuel</span></div><a class="btn copy" href="https://linkedin.com/in/issacimmanuel" target="_blank" rel="noopener">Open ↗</a></div>
+  <section class="sec" id="credentials" data-reveal aria-labelledby="cred-h">
+    <div class="wrap">
+      <div class="gut"><span class="pin" data-stop="pin"><svg viewBox="0 0 48 64"><path class="body" d="M24 63C24 63 3 38 3 24a21 21 0 1 1 42 0c0 14-21 39-21 39z"/><circle class="eye" cx="24" cy="24" r="12.5"/></svg></span></div>
+      <div>
+        <p class="label mono">Credentials</p>
+        <h2 id="cred-h">Education &amp; licensure</h2>
+        <dl class="rows">
+          <div class="row"><dt>MBA, Healthcare Management<small>Manipal Academy of Higher Education</small></dt><dd>Expected Apr 2027</dd></div>
+          <div class="row"><dt>Doctor of Medicine (MD), MBBS-equivalent<small>Davao Medical School Foundation, Philippines</small></dt><dd>Dec 2017</dd></div>
+          <div class="row"><dt>BS Biology<small>Davao Medical School Foundation, Philippines</small></dt><dd>Oct 2013</dd></div>
+        </dl>
+        <p class="sub mono">Registration &amp; certifications</p>
+        <dl class="rows">
+          <div class="row"><dt>Registered Medical Practitioner<small>Tamil Nadu Medical Council · Maldivian Medical Council</small></dt><dd>Details on request</dd></div>
+          <div class="row"><dt>FMGE<small>Foreign Medical Graduate Examination</small></dt><dd>2018</dd></div>
+          <div class="row"><dt>Maldivian Medical Council Licensing Exam</dt><dd>2023</dd></div>
+          <div class="row"><dt>IELTS Academic, band 7.5</dt><dd>Jan 2022</dd></div>
+          <div class="row"><dt>Certificate in Healthcare Management (CPHM)<small>Indian School of Business</small></dt><dd>Jul 2024</dd></div>
+          <div class="row"><dt>AI in Healthcare<small>National Board of Examinations</small></dt><dd>Jun 2026</dd></div>
+        </dl>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec next" data-reveal aria-labelledby="next-h">
+    <div class="wrap">
+      <div class="gut"><span class="pin" data-stop="pin"><svg viewBox="0 0 48 64"><path class="body" d="M24 63C24 63 3 38 3 24a21 21 0 1 1 42 0c0 14-21 39-21 39z"/><circle class="eye" cx="24" cy="24" r="12.5"/><text x="24" y="30.5">?</text></svg></span></div>
+      <div>
+        <p class="label mono">Next stop</p>
+        <h2 id="next-h">Not on the map yet</h2>
+        <a class="btn" href="#contact">Suggest a destination ↓</a>
       </div>
     </div>
   </section>
 </main>
 
-<footer><div class="wrap">Chennai, Tamil Nadu · Updated November 2026</div></footer>
+<section class="contact" id="contact" aria-labelledby="contact-h">
+  <div class="wrap">
+    <h2 id="contact-h" class="reveal">Let's talk</h2>
+    <div class="contact-list reveal">
+      <div class="contact-item"><div><span class="k mono">Email</span><span class="v" id="v-email">dr.issac0307@gmail.com</span></div><button class="btn copy" data-target="v-email" type="button">Copy</button></div>
+      <div class="contact-item"><div><span class="k mono">LinkedIn</span><span class="v">linkedin.com/in/issacimmanuel</span></div><a class="btn" href="https://linkedin.com/in/issacimmanuel" target="_blank" rel="noopener">Open ↗</a></div>
+    </div>
+    <footer class="mono"><span>Chennai, Tamil Nadu</span><span>Updated November 2026</span></footer>
+  </div>
+</section>
 
 <script>
+document.documentElement.classList.add('js');
+var REDUCED = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+/* Hero wallpaper: the quick introduction, repeated across rows */
+(function () {
+  var box = document.querySelector('.words'), W = ['Doctor', 'Health Tech Enthusiast', 'Medical Reviewer', 'MBA Candidate', 'Island Medic', "Veterans' Physician", 'AI in Healthcare'];
+  for (var r = 0; r < 6; r++) {
+    var row = document.createElement('div'), line = '';
+    row.className = 'wr'; row.style.setProperty('--d', (0.35 + (r * 37 % 6) / 5 * 0.9).toFixed(2)); row.style.setProperty('--t', (70 + (r * 23) % 50) + 's');
+    for (var i = 0; i < W.length; i++) line += W[(i + r * 3) % W.length] + ' \u00b7 ';
+    for (var c = 0; c < 2; c++) { var s = document.createElement('span'); s.textContent = line; row.appendChild(s); }
+    box.appendChild(row);
+  }
+})();
+
+/* In-page links: scroll there ourselves, so they work however the page is opened */
+document.querySelectorAll('a[href^="#"]').forEach(function (a) {
+  a.addEventListener('click', function (e) {
+    var t = document.getElementById(a.getAttribute('href').slice(1));
+    if (!t) return;
+    e.preventDefault();
+    t.scrollIntoView({ behavior: REDUCED ? 'auto' : 'smooth', block: 'start' });
+  });
+});
+
+/* Copy button */
 document.querySelectorAll('button.copy').forEach(function (b) {
   b.addEventListener('click', function () {
     var el = document.getElementById(b.dataset.target);
@@ -328,6 +453,304 @@ document.querySelectorAll('button.copy').forEach(function (b) {
     try { navigator.clipboard.writeText(text).then(done, fallback); } catch (e) { fallback(); }
   });
 });
+
+/* Contact reveal + nav state */
+(function () {
+  var items = document.querySelectorAll('.reveal');
+  if (!('IntersectionObserver' in window)) { items.forEach(function (el) { el.classList.add('in'); }); return; }
+  var io = new IntersectionObserver(function (es) {
+    es.forEach(function (e) { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } });
+  }, { rootMargin: '0px 0px -8% 0px' });
+  items.forEach(function (el) { io.observe(el); });
+  var nav = document.querySelector('.nav');
+  new IntersectionObserver(function (es) { nav.classList.toggle('solid', !es[0].isIntersecting); }, { rootMargin: '-64px 0px 0px 0px' })
+    .observe(document.querySelector('.hero'));
+})();
+
+/* The route. A path is threaded through every pin and waypoint (wherever the layout has put them),
+   then drawn in step with the scroll. When the line reaches a stop, that stop and its content switch on. */
+(function () {
+  var J = document.querySelector('.journey'), svg = J.querySelector('.route');
+  var track = svg.querySelector('.track'), done = svg.querySelector('.done'), tip = J.querySelector('.tip');
+  var stops = [].slice.call(J.querySelectorAll('[data-stop]'));
+  var pts = [], L = 0, ys = [], STEP = 5, cur = 0, goal = 0, best = 0, raf = 0, counted = false, dot = 0, dotGoal = 0;
+
+  J.querySelectorAll('.vitals, .skills, .rows').forEach(function (g) { [].forEach.call(g.children, function (c, i) { c.style.setProperty('--i', i); }); });
+
+  function layout() {
+    var jr = J.getBoundingClientRect(), w = J.clientWidth, h = J.offsetHeight;
+    svg.setAttribute('width', w); svg.setAttribute('height', h); svg.setAttribute('viewBox', '0 0 ' + w + ' ' + h);
+    var lane = J.querySelector('.gut').getBoundingClientRect(), cx = lane.left - jr.left + lane.width / 2, amp = lane.width * 0.3;
+    // offsetLeft/Top ignore transforms, so stops are measured where they rest, not mid-animation
+    var was = pts;
+    pts = stops.map(function (el, i) {
+      var x = el.offsetWidth / 2, y = el.dataset.stop === 'pin' ? el.offsetHeight - 1 : el.offsetHeight / 2, n = el;
+      while (n && n !== J) { x += n.offsetLeft; y += n.offsetTop; n = n.offsetParent; }
+      return { el: el, x: x, y: y, on: was[i] ? was[i].on : false };
+    });
+    // thread: start at the top of the lane, pass through every stop, and wander a little on long empty stretches
+    var P = [{ x: cx, y: 0 }], side = 1;
+    pts.forEach(function (p) {
+      var a = P[P.length - 1], gapY = p.y - a.y, extra = Math.floor(gapY / 300);
+      for (var k = 1; k <= extra; k++) { P.push({ x: cx + amp * side, y: a.y + gapY * k / (extra + 1) }); side = -side; }
+      P.push(p);
+    });
+    var d = 'M' + P[0].x.toFixed(1) + ' ' + P[0].y.toFixed(1);
+    for (var i = 1; i < P.length; i++) {
+      var a = P[i - 1], b = P[i], m = (b.y - a.y) * 0.5;
+      d += 'C' + a.x.toFixed(1) + ' ' + (a.y + m).toFixed(1) + ' ' + b.x.toFixed(1) + ' ' + (b.y - m).toFixed(1) + ' ' + b.x.toFixed(1) + ' ' + b.y.toFixed(1);
+    }
+    track.setAttribute('d', d); done.setAttribute('d', d);
+    L = done.getTotalLength(); ys = [];
+    for (var s = 0; s <= L; s += STEP) ys.push(done.getPointAtLength(s).y);
+    pts.forEach(function (p) { p.len = lenAtY(p.y); });
+    done.style.strokeDasharray = L + ' ' + L;
+  }
+  function lenAtY(y) {
+    var lo = 0, hi = ys.length - 1;
+    if (y <= ys[0]) return 0; if (y >= ys[hi]) return L;
+    while (hi - lo > 1) { var mid = (lo + hi) >> 1; if (ys[mid] < y) lo = mid; else hi = mid; }
+    return Math.min(L, (lo + (y - ys[lo]) / Math.max(.001, ys[hi] - ys[lo])) * STEP);
+  }
+  function countUp(root) {
+    if (counted) return; counted = true;
+    root.querySelectorAll('[data-count]').forEach(function (el) {
+      var to = +el.dataset.count, t0 = performance.now(), dur = 1300;
+      (function tick(now) {
+        var k = Math.min(1, (now - t0) / dur), e = 1 - Math.pow(1 - k, 3);
+        el.textContent = Math.round(to * e).toLocaleString('en-US');
+        if (k < 1) requestAnimationFrame(tick);
+      })(t0);
+    });
+  }
+  function draw() {
+    done.style.strokeDashoffset = L - cur;
+    var p = done.getPointAtLength(dot);
+    tip.style.transform = 'translate(' + p.x.toFixed(1) + 'px,' + p.y.toFixed(1) + 'px)';
+    tip.classList.toggle('live', dot > 4 && dot < L - 4);
+    pts.forEach(function (s) {
+      if (s.on || s.len > cur + 2) return;
+      s.on = true;
+      var box = s.el.closest('[data-reveal]');
+      if (box) { box.classList.add('on'); if (box.classList.contains('intro') && !REDUCED) countUp(box); }
+    });
+  }
+  function loop() {
+    cur += (goal - cur) * 0.14; dot += (dotGoal - dot) * 0.16;
+    if (Math.abs(goal - cur) < 0.5 && Math.abs(dotGoal - dot) < 0.5) { cur = goal; dot = dotGoal; raf = 0; } else raf = requestAnimationFrame(loop);
+    draw();
+  }
+  function onScroll() {
+    var y = innerHeight * 0.66 - J.getBoundingClientRect().top;
+    best = Math.max(best, y);
+    goal = REDUCED ? L : lenAtY(best); dotGoal = lenAtY(y);
+    if (REDUCED) { cur = goal; dot = dotGoal; draw(); return; }
+    if (!raf) raf = requestAnimationFrame(loop);
+  }
+  function fail() { document.documentElement.classList.remove('fxon'); }
+
+  try {
+    layout();
+    document.documentElement.classList.add('fxon');
+    onScroll();
+    addEventListener('scroll', onScroll, { passive: true });
+    var rt = 0, relayout = function () { clearTimeout(rt); rt = setTimeout(function () { try { layout(); cur = Math.min(cur, L); dot = Math.min(dot, L); onScroll(); draw(); } catch (e) { fail(); } }, 120); };
+    addEventListener('resize', relayout);
+    if ('ResizeObserver' in window) new ResizeObserver(relayout).observe(J);
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(relayout);
+  } catch (e) { fail(); }
+})();
+
+/* Hero: the name is a few thousand particles resting in a small fluid simulation.
+   The pointer stirs the fluid; the fluid carries dye (the colour gradient) and pushes the particles,
+   which spring back to their letter. With reduced motion, or no canvas, the plain heading stays. */
+(function () {
+  var hero = document.querySelector('.hero'), cv = hero.querySelector('canvas');
+  if (!cv.getContext || REDUCED) return;
+  var ctx = cv.getContext('2d');
+  var LINES = ['DR. ISSAC', 'IMMANUEL'];
+  var PCOL = ['#64313E', '#8A3552', '#C2566E', '#1F2A44'];
+  var W, H, cs, GW, GH, u, v, u0, v0, d, d0, pr, dv;
+  var N = 0, px, py, vx, vy, hx, hy, bk, psz = 3;
+  var dyeCv = document.createElement('canvas'), dyeCtx = dyeCv.getContext('2d'), dyeImg, LUT = new Uint8ClampedArray(1024);
+  var depth = 8, tx = .3, ty = -.2, txGoal = .3, tyGoal = -.2;
+  var small = false, onScreen = true, raf = 0, last = null, lastMove = -1e9, idle = null, builtW = 0;
+
+  // dye ramp on ivory: a blush haze, through rose and burgundy, to a midnight core
+  (function () {
+    var stops = [[0, 238, 170, 160, 0], [.2, 236, 160, 152, 150], [.48, 194, 86, 110, 205], [.76, 100, 49, 62, 230], [1, 31, 42, 68, 240]];
+    for (var i = 0; i < 256; i++) {
+      var t = i / 255, k = 0;
+      while (k < stops.length - 2 && t > stops[k + 1][0]) k++;
+      var a = stops[k], b = stops[k + 1], f = (t - a[0]) / (b[0] - a[0]);
+      for (var c = 0; c < 4; c++) LUT[i * 4 + c] = a[c + 1] + (b[c + 1] - a[c + 1]) * f;
+    }
+  })();
+
+  function build() {
+    W = hero.clientWidth; H = hero.clientHeight; builtW = W;
+    small = W < 760;
+    var dpr = Math.min(window.devicePixelRatio || 1, small ? 1.5 : 2);
+    cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr);
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+    cs = Math.max(W, H) / (small ? 96 : 150);
+    GW = Math.ceil(W / cs) + 2; GH = Math.ceil(H / cs) + 2;
+    var n = GW * GH;
+    u = new Float32Array(n); v = new Float32Array(n); u0 = new Float32Array(n); v0 = new Float32Array(n);
+    d = new Float32Array(n); d0 = new Float32Array(n); pr = new Float32Array(n); dv = new Float32Array(n);
+    dyeCv.width = GW; dyeCv.height = GH; dyeImg = dyeCtx.createImageData(GW, GH);
+
+    // rasterise the name, then sample it into particle homes
+    var m = document.createElement('canvas'); m.width = W; m.height = H;
+    var mc = m.getContext('2d', { willReadFrequently: true });
+    var fam = '"Anton", Impact, "Arial Narrow", sans-serif';
+    mc.font = '400 100px ' + fam;
+    var widest = Math.max(mc.measureText(LINES[0]).width, mc.measureText(LINES[1]).width);
+    var fs = Math.min(0.9 * W / (widest / 100), 0.33 * H);
+    mc.font = '400 ' + fs + 'px ' + fam; mc.textAlign = 'center'; mc.textBaseline = 'middle'; mc.fillStyle = '#000';
+    depth = Math.max(4, fs * 0.05);
+    mc.fillText(LINES[0], W / 2, H / 2 - fs * 0.47);
+    mc.fillText(LINES[1], W / 2, H / 2 + fs * 0.51);
+    var data = mc.getImageData(0, 0, W, H).data, target = small ? 7000 : 22000, step = 2, pts;
+    do {
+      step++; pts = [];
+      for (var y = step >> 1; y < H; y += step) for (var x = step >> 1; x < W; x += step) if (data[(y * W + x) * 4 + 3] > 128) pts.push(x, y);
+    } while (pts.length / 2 > target);
+    N = pts.length / 2; psz = Math.max(1.5, step - 0.3);
+    px = new Float32Array(N); py = new Float32Array(N); vx = new Float32Array(N); vy = new Float32Array(N);
+    hx = new Float32Array(N); hy = new Float32Array(N); bk = new Uint8Array(N);
+    for (var i = 0; i < N; i++) {
+      hx[i] = pts[i * 2]; hy[i] = pts[i * 2 + 1];
+      px[i] = hx[i] + (Math.random() - .5) * W * .7; py[i] = hy[i] + (Math.random() - .5) * H * .9;
+    }
+    last = null; idle = null;
+    hero.classList.add('fx');
+  }
+
+  function splat(x, y, dx, dy, amt) {
+    var gx = x / cs + 1, gy = y / cs + 1, r = small ? 1.9 : 2.9, r2 = r * r * 0.36;
+    var x0 = Math.max(1, Math.floor(gx - r)), x1 = Math.min(GW - 2, Math.ceil(gx + r));
+    var y0 = Math.max(1, Math.floor(gy - r)), y1 = Math.min(GH - 2, Math.ceil(gy + r));
+    for (var j = y0; j <= y1; j++) for (var i = x0; i <= x1; i++) {
+      var f = Math.exp(-((i - gx) * (i - gx) + (j - gy) * (j - gy)) / r2), k = i + j * GW;
+      u[k] += dx / cs * f * 1.6; v[k] += dy / cs * f * 1.6;
+      d[k] = Math.min(1.25, d[k] + amt * f);
+    }
+  }
+  function stroke(ax, ay, bx, by, amt, force) {
+    var dx = bx - ax, dy = by - ay, len = Math.sqrt(dx * dx + dy * dy);
+    if (len < 0.5) return;
+    dx *= force; dy *= force; len *= force;
+    var cap = cs * 8; if (len > cap) { dx *= cap / len; dy *= cap / len; }
+    var steps = Math.min(20, Math.max(1, Math.round(len / (cs * 1.2))));
+    for (var s = 1; s <= steps; s++) splat(ax + (bx - ax) * s / steps, ay + (by - ay) * s / steps, dx / steps, dy / steps, amt / steps);
+  }
+
+  function advect(dst, src) {
+    var maxX = GW - 1.501, maxY = GH - 1.501;
+    for (var j = 1; j < GH - 1; j++) for (var i = 1; i < GW - 1; i++) {
+      var k = i + j * GW, x = i - u[k], y = j - v[k];
+      x = x < .5 ? .5 : x > maxX ? maxX : x; y = y < .5 ? .5 : y > maxY ? maxY : y;
+      var xi = x | 0, yi = y | 0, fx = x - xi, fy = y - yi, q = xi + yi * GW;
+      dst[k] = (src[q] * (1 - fx) + src[q + 1] * fx) * (1 - fy) + (src[q + GW] * (1 - fx) + src[q + GW + 1] * fx) * fy;
+    }
+  }
+  function project() {
+    var i, j, k, it;
+    for (j = 1; j < GH - 1; j++) for (i = 1; i < GW - 1; i++) { k = i + j * GW; dv[k] = -0.5 * (u[k + 1] - u[k - 1] + v[k + GW] - v[k - GW]); pr[k] = 0; }
+    for (it = 0; it < 10; it++) for (j = 1; j < GH - 1; j++) for (i = 1; i < GW - 1; i++) { k = i + j * GW; pr[k] = (dv[k] + pr[k - 1] + pr[k + 1] + pr[k - GW] + pr[k + GW]) * 0.25; }
+    for (j = 1; j < GH - 1; j++) for (i = 1; i < GW - 1; i++) { k = i + j * GW; u[k] -= 0.5 * (pr[k + 1] - pr[k - 1]); v[k] -= 0.5 * (pr[k + GW] - pr[k - GW]); }
+  }
+
+  var prev = 0;
+  function frame(now) {
+    raf = requestAnimationFrame(frame);
+    if (now - prev < 14) return;   // hold the simulation near 60 steps a second on fast displays
+    prev = now;
+    var i, k, t;
+    // when nobody is stirring, a slow current keeps the surface alive
+    if (now - lastMove > 2200) {
+      t = now / 1000;
+      var ix = W * (.5 + .38 * Math.sin(t * .37)), iy = H * (.5 + .26 * Math.sin(t * .53 + 1.3));
+      if (idle) stroke(idle[0], idle[1], ix, iy, 0.006, 0.34);
+      idle = [ix, iy];
+    } else idle = null;
+
+    project();
+    advect(u0, u); advect(v0, v); advect(d0, d);
+    t = u; u = u0; u0 = t; t = v; v = v0; v0 = t; t = d; d = d0; d0 = t;
+    var px4 = dyeImg.data;
+    for (k = 0; k < u.length; k++) {
+      u[k] *= 0.962; v[k] *= 0.962; d[k] *= 0.975;
+      if (u[k] > 8) u[k] = 8; else if (u[k] < -8) u[k] = -8;
+      if (v[k] > 8) v[k] = 8; else if (v[k] < -8) v[k] = -8;
+      var li = (d[k] > 1 ? 255 : (d[k] * 255) | 0) * 4, o = k * 4;
+      px4[o] = LUT[li]; px4[o + 1] = LUT[li + 1]; px4[o + 2] = LUT[li + 2]; px4[o + 3] = LUT[li + 3];
+    }
+    dyeCtx.putImageData(dyeImg, 0, 0);
+    ctx.clearRect(0, 0, W, H);
+    ctx.imageSmoothingEnabled = true; ctx.imageSmoothingQuality = 'high';
+    ctx.drawImage(dyeCv, 1, 1, W / cs, H / cs, 0, 0, W, H);
+
+    var push = cs * 0.95;
+    for (i = 0; i < N; i++) {
+      var gx = (px[i] / cs + 1) | 0, gy = (py[i] / cs + 1) | 0;
+      if (gx < 0) gx = 0; else if (gx > GW - 1) gx = GW - 1;
+      if (gy < 0) gy = 0; else if (gy > GH - 1) gy = GH - 1;
+      k = gx + gy * GW;
+      var ox = hx[i] - px[i], oy = hy[i] - py[i];
+      vx[i] = (vx[i] + u[k] * push + ox * 0.045) * 0.85;
+      vy[i] = (vy[i] + v[k] * push + oy * 0.045) * 0.85;
+      px[i] += vx[i]; py[i] += vy[i];
+      var q = ox * ox + oy * oy;
+      bk[i] = q < 4 ? 0 : q < 60 ? 1 : q < 500 ? 2 : 3;
+    }
+    var h = psz / 2;
+    if (now - lastMove > 2200) { txGoal = .45 * Math.sin(now / 2600); tyGoal = -.2 + .25 * Math.cos(now / 3300); }
+    tx += (txGoal - tx) * 0.06; ty += (tyGoal - ty) * 0.06;
+    var ex = -tx * depth, ey = depth * .55 - ty * depth * .7, big = psz + 1;
+    // one slab per particle, stretched from its face to the back of the extrusion
+    var sx = ex < 0 ? ex : 0, sy = ey < 0 ? ey : 0, sw = big + Math.abs(ex), sh = big + Math.abs(ey);
+    ctx.fillStyle = '#3A1A25';
+    for (i = 0; i < N; i++) ctx.fillRect(px[i] - h + sx, py[i] - h + sy, sw, sh);
+    for (var c = 0; c < 4; c++) {
+      ctx.fillStyle = PCOL[c];
+      for (i = 0; i < N; i++) if (bk[i] === c) ctx.fillRect(px[i] - h, py[i] - h, psz, psz);
+    }
+  }
+  function play() { if (!raf && onScreen && N) raf = requestAnimationFrame(frame); }
+  function pause() { cancelAnimationFrame(raf); raf = 0; }
+
+  hero.addEventListener('pointermove', function (e) {
+    var r = hero.getBoundingClientRect(), x = e.clientX - r.left, y = e.clientY - r.top;
+    if (last) {
+      var dx = x - last[0], dy = y - last[1], sp = Math.sqrt(dx * dx + dy * dy);
+      stroke(last[0], last[1], x, y, Math.min(0.9, 0.25 + sp / 90), 1);
+    }
+    last = [x, y]; lastMove = performance.now();
+    txGoal = x / r.width * 2 - 1; tyGoal = y / r.height * 2 - 1;
+    hero.style.setProperty('--px', txGoal.toFixed(3)); hero.style.setProperty('--py', tyGoal.toFixed(3));
+  });
+  hero.addEventListener('pointerleave', function () { last = null; });
+  hero.addEventListener('pointercancel', function () { last = null; });
+  hero.addEventListener('pointerdown', function (e) {
+    var r = hero.getBoundingClientRect(); last = [e.clientX - r.left, e.clientY - r.top];
+    splat(last[0], last[1], 0, 0, 0.7); lastMove = performance.now();
+  });
+
+  if ('IntersectionObserver' in window) new IntersectionObserver(function (es) { onScreen = es[0].isIntersecting; onScreen ? play() : pause(); }).observe(hero);
+  var rt = 0;
+  window.addEventListener('resize', function () {
+    clearTimeout(rt);
+    rt = setTimeout(function () { if (hero.clientWidth !== builtW) { build(); play(); } }, 200);
+  });
+
+  var started = false;
+  function start() { if (started) return; started = true; try { build(); play(); } catch (e) { hero.classList.remove('fx'); } }
+  if (document.fonts && document.fonts.load) { document.fonts.load('400 120px "Anton"').then(start, start); setTimeout(start, 2500); }
+  else start();
+})();
 </script>
 
 </body>
