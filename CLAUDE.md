@@ -14,6 +14,8 @@ Dr. Issac Immanuel's public portfolio site, served by GitHub Pages at **issacimm
 - The content comes **only** from the private `DrIssacImmanuel/portfolio-private` repo: proofs whose `notes.md` says `portfolio-ready: yes`, and certificates listed with an issuer verification link.
 - Prefer a verification link over hosting a certificate PDF. Before publishing any PDF, check it for registration numbers, date of birth or other identifiers.
 - Use the proof's portfolio blurb as the starting copy.
+- **Online courses** sit in the Credentials section's "Online courses" list, ordered most relevant to clinical AI / digital-health product roles first, not by date. Only the first 5 show; the rest fold into a "Show all" button automatically (`data-cap` on the `<dl>`). Each entry links to the issuer's verify page.
+- **Courses and projects point to each other.** When a project goes on the site, name the courses that fed into it; when a course supports a published project, link to that project from the course row.
 
 ## Commits
 Every commit ends with `Co-Authored-By: Claude <noreply@anthropic.com>`.

@@ -168,6 +168,9 @@ h2 { font: 400 clamp(2.2rem, 6vw, 4.2rem)/1 var(--display); text-transform: uppe
 .sub { color: var(--burgundy); margin: 2.75rem 0 .9rem; }
 .row dd a { color: var(--burgundy); text-decoration: underline; text-underline-offset: .2em; text-decoration-color: var(--line); transition: color 110ms ease, text-decoration-color 110ms ease; }
 .row dd a:hover { color: var(--midnight); text-decoration-color: currentColor; }
+.more { display: inline-block; margin-top: .9rem; padding: .35rem 0; background: none; border: 0; cursor: pointer; font: 500 .78rem/1.5 var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--burgundy); text-decoration: underline; text-underline-offset: .25em; text-decoration-color: var(--line); transition: color 110ms ease; }
+.more:hover { color: var(--midnight); text-decoration-color: currentColor; }
+.rows + .rows { border-top: 0; }
 @media (max-width: 560px) { .row { grid-template-columns: minmax(0, 1fr); gap: .15rem; padding-inline: .5rem; } }
 
 /* Next stop */
@@ -295,7 +298,8 @@ footer { padding-block: 2rem max(2.25rem, env(safe-area-inset-bottom, 0px)); dis
           <div class="row"><dt>AI in Healthcare<small>National Board of Examinations</small></dt><dd>Jun 2026</dd></div>
         </dl>
         <p class="sub mono">Online courses</p>
-        <dl class="rows">
+        <!-- Most relevant first. Only the first data-cap rows show; the rest fold into "Show all" automatically. -->
+        <dl class="rows" data-cap="5" data-noun="courses">
           <div class="row"><dt>Leading Change in Health Informatics<small>Johns Hopkins University · Coursera</small></dt><dd>Nov 2026 · <a href="https://coursera.org/verify/WYRLU4LQE4A0" target="_blank" rel="noopener" aria-label="Verify Leading Change in Health Informatics certificate on Coursera">Verify ↗</a></dd></div>
           <div class="row"><dt>The Social and Technical Context of Health Informatics<small>Johns Hopkins University · Coursera</small></dt><dd>May 2026 · <a href="https://coursera.org/verify/CQIZPYCHYPSH" target="_blank" rel="noopener" aria-label="Verify The Social and Technical Context of Health Informatics certificate on Coursera">Verify ↗</a></dd></div>
           <div class="row"><dt>Foundations of Public Health Practice: The Public Health Approach<small>Imperial College London · Coursera</small></dt><dd>May 2026 · <a href="https://coursera.org/verify/BKPIC63Y1KPA" target="_blank" rel="noopener" aria-label="Verify Foundations of Public Health Practice: The Public Health Approach certificate on Coursera">Verify ↗</a></dd></div>
@@ -453,6 +457,21 @@ document.querySelectorAll('button.copy').forEach(function (b) {
     var fallback = function () { var r = document.createRange(); r.selectNodeContents(el); var s = getSelection(); s.removeAllRanges(); s.addRange(r); b.textContent = 'Selected'; };
     try { navigator.clipboard.writeText(text).then(done, fallback); } catch (e) { fallback(); }
   });
+});
+
+/* Long lists: keep the first data-cap rows, fold the rest into a "Show all" toggle.
+   Without JavaScript every row simply stays visible. */
+document.querySelectorAll('.rows[data-cap]').forEach(function (dl, n) {
+  var cap = +dl.getAttribute('data-cap'), rows = [].slice.call(dl.children);
+  if (rows.length <= cap) return;
+  var noun = dl.getAttribute('data-noun') || 'items';
+  var rest = document.createElement('dl'), btn = document.createElement('button');
+  rest.className = 'rows'; rest.id = 'more-' + n; rest.hidden = true;
+  rows.slice(cap).forEach(function (r) { rest.appendChild(r); });
+  btn.type = 'button'; btn.className = 'more'; btn.setAttribute('aria-controls', rest.id);
+  var label = function () { btn.setAttribute('aria-expanded', !rest.hidden); btn.textContent = rest.hidden ? 'Show all ' + rows.length + ' ' + noun + ' ↓' : 'Show fewer ↑'; };
+  btn.addEventListener('click', function () { rest.hidden = !rest.hidden; label(); });
+  label(); dl.after(rest); rest.after(btn);
 });
 
 /* Contact reveal + nav state */
