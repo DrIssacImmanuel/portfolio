@@ -166,6 +166,8 @@ h2 { font: 400 clamp(2.2rem, 6vw, 4.2rem)/1 var(--display); text-transform: uppe
 .row dt small { display: block; font-weight: 400; color: var(--muted); font-size: .92rem; margin-top: .1rem; }
 .row dd { margin: 0; font: 400 .78rem/1.5 var(--mono); color: var(--muted); white-space: nowrap; font-variant-numeric: tabular-nums; }
 .sub { color: var(--burgundy); margin: 2.75rem 0 .9rem; }
+.row dd a { color: var(--burgundy); text-decoration: underline; text-underline-offset: .2em; text-decoration-color: var(--line); transition: color 110ms ease, text-decoration-color 110ms ease; }
+.row dd a:hover { color: var(--midnight); text-decoration-color: currentColor; }
 @media (max-width: 560px) { .row { grid-template-columns: minmax(0, 1fr); gap: .15rem; padding-inline: .5rem; } }
 
 /* Next stop */
@@ -291,6 +293,12 @@ footer { padding-block: 2rem max(2.25rem, env(safe-area-inset-bottom, 0px)); dis
           <div class="row"><dt>IELTS Academic, band 7.5</dt><dd>Jan 2022</dd></div>
           <div class="row"><dt>Certificate in Healthcare Management (CPHM)<small>Indian School of Business</small></dt><dd>Jul 2024</dd></div>
           <div class="row"><dt>AI in Healthcare<small>National Board of Examinations</small></dt><dd>Jun 2026</dd></div>
+        </dl>
+        <p class="sub mono">Online courses</p>
+        <dl class="rows">
+          <div class="row"><dt>Leading Change in Health Informatics<small>Johns Hopkins University · Coursera</small></dt><dd>Nov 2026 · <a href="https://coursera.org/verify/WYRLU4LQE4A0" target="_blank" rel="noopener" aria-label="Verify Leading Change in Health Informatics certificate on Coursera">Verify ↗</a></dd></div>
+          <div class="row"><dt>The Social and Technical Context of Health Informatics<small>Johns Hopkins University · Coursera</small></dt><dd>May 2026 · <a href="https://coursera.org/verify/CQIZPYCHYPSH" target="_blank" rel="noopener" aria-label="Verify The Social and Technical Context of Health Informatics certificate on Coursera">Verify ↗</a></dd></div>
+          <div class="row"><dt>Foundations of Public Health Practice: The Public Health Approach<small>Imperial College London · Coursera</small></dt><dd>May 2026 · <a href="https://coursera.org/verify/BKPIC63Y1KPA" target="_blank" rel="noopener" aria-label="Verify Foundations of Public Health Practice: The Public Health Approach certificate on Coursera">Verify ↗</a></dd></div>
         </dl>
       </div>
     </div>
