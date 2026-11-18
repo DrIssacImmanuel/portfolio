@@ -138,6 +138,16 @@ h2 { font: 400 clamp(2.2rem, 6vw, 4.2rem)/1 var(--display); text-transform: uppe
 .skill:hover h3 { color: var(--midnight); }
 @media (max-width: 640px) { .skills { grid-template-columns: minmax(0, 1fr); } }
 
+/* Projects: what I've built */
+.project { padding: 1.5rem 1.4rem 1.6rem; border: 1px solid var(--line); border-radius: 14px; transition: background 110ms ease; }
+.project:hover { background: var(--white); }
+.project h3 { font: 600 1.25rem/1.3 var(--body); color: var(--burgundy); margin: 0; transition: color 110ms ease; }
+.project:hover h3 { color: var(--midnight); }
+.project .org { margin: .2rem 0 .8rem; }
+.project p { margin: 0 0 1rem; max-width: 62ch; }
+.facts { list-style: none; margin: 0 0 1.25rem; padding: 0; display: flex; flex-wrap: wrap; gap: .5rem; }
+.facts li { font: 500 .72rem/1 var(--mono); letter-spacing: .06em; color: var(--burgundy); border: 1px solid var(--line); border-radius: 999px; padding: .5rem .75rem; }
+
 /* B · Experience: waypoints on the route */
 .timeline { list-style: none; margin: 0; padding: 0; }
 .role { position: relative; display: grid; grid-template-columns: 9.5rem minmax(0, 1fr); gap: .4rem 1.5rem; padding: 1.4rem 1.25rem 1.5rem; margin-bottom: .75rem; border: 1px solid var(--line); border-radius: 14px; transition: background 110ms ease; }
@@ -232,6 +242,7 @@ footer { padding-block: 2rem max(2.25rem, env(safe-area-inset-bottom, 0px)); dis
 <nav class="nav mono" aria-label="Sections">
   <span class="place">Chennai, India</span>
   <ul>
+    <li><a href="#projects">Projects</a></li>
     <li><a href="#credentials">Credentials</a></li>
     <li><a href="#experience">Experience</a></li>
     <li><a href="#contact">Contact</a></li>
@@ -273,6 +284,27 @@ footer { padding-block: 2rem max(2.25rem, env(safe-area-inset-bottom, 0px)); dis
           <div class="skill"><h3>Emergency &amp; preventive care</h3><p>First-line emergency management in remote clinics, health screening and site emergency preparedness.</p></div>
           <div class="skill"><h3>Documentation &amp; coding</h3><p>EHR documentation, longitudinal records, ICD-10 coding, SOP compliance and JCI documentation standards.</p></div>
         </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec" id="projects" data-reveal aria-labelledby="proj-h">
+    <div class="wrap">
+      <div class="gut"><span class="pin" data-stop="pin"><svg viewBox="0 0 48 64"><path class="body" d="M24 63C24 63 3 38 3 24a21 21 0 1 1 42 0c0 14-21 39-21 39z"/><circle class="eye" cx="24" cy="24" r="12.5"/></svg></span></div>
+      <div>
+        <p class="label mono">Projects</p>
+        <h2 id="proj-h">What I've built</h2>
+        <article class="project">
+          <h3>DSC Signator</h3>
+          <p class="org">Bulk PDF digital-signing tool · built for ECHS, Chennai · v3.0, Nov 2026</p>
+          <p>At the clinic, around 50 PDFs a week were digitally signed one at a time with a USB DSC token. I spotted the bottleneck and shipped a Windows desktop tool that signs a whole folder in one pass. It's built so a mistake can't damage records: the PIN is checked once before any file is touched, already-signed and protected files are skipped with a reason, and every write is atomic. It runs on a single on-premises PC, so no documents leave the clinic.</p>
+          <ul class="facts" aria-label="Key facts">
+            <li>~50 PDFs a week</li>
+            <li>Saves ~1–2 hours a week</li>
+            <li>On-premises only</li>
+          </ul>
+          <a class="btn ghost" href="https://github.com/DrIssacImmanuel/DSC-Signator" target="_blank" rel="noopener">View on GitHub ↗</a>
+        </article>
       </div>
     </div>
   </section>
