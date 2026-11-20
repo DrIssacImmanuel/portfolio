@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Time to $1 Trillion: Global Tech vs. AI & Data Cohort (Nov 2026)</title>
+<meta name="description" content="How fast did today's trillion-dollar companies get there? Anthropic took 5.8 years from founding to $1T. Interactive comparison of 22 tech and AI companies, November 2026.">
+<meta property="og:title" content="Time to $1 Trillion: Global Tech vs. AI & Data Cohort">
+<meta property="og:description" content="Anthropic reached $1T 5.8 years after founding. Interactive comparison of 22 tech and AI companies, November 2026.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://issacimmanuel.in/trillion/">
+<style>
+  :root {
+    --bg: #0b0f19;
+    --card: #111827;
+    --card-border: #1f2937;
+    --text: #f3f4f6;
+    --muted: #9ca3af;
+    --accent: #38bdf8;
+    --emerald: #10b981;
+    --amber: #f59e0b;
+    --purple: #a855f7;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Inter, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.5;
+    padding: 24px 16px 64px;
+  }
+  .container { max-width: 1200px; margin: 0 auto; }
+  header {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 16px;
+    margin-bottom: 24px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--card-border);
+  }
+  h1 { font-size: 1.75rem; font-weight: 700; letter-spacing: -0.02em; }
+  .subtitle { color: var(--muted); font-size: 0.95rem; margin-top: 4px; }
+  .header-controls { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+  .btn, .toggle-group button {
+    background: #1f2937;
+    color: var(--text);
+    border: 1px solid #374151;
+    padding: 7px 14px;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+  .btn:hover, .toggle-group button:hover { border-color: var(--accent); }
+  .toggle-group { display: inline-flex; background: #1f2937; border-radius: 8px; padding: 2px; border: 1px solid #374151; }
+  .toggle-group button { border: none; border-radius: 6px; background: transparent; padding: 6px 12px; }
+  .toggle-group button.active { background: var(--accent); color: #0b0f19; font-weight: 600; }
+
+  .callout {
+    background: rgba(56, 189, 248, 0.08);
+    border: 1px solid rgba(56, 189, 248, 0.25);
+    border-radius: 10px;
+    padding: 12px 16px;
+    font-size: 0.88rem;
+    color: #e0f2fe;
+    margin-bottom: 24px;
+  }
+  .card {
+    background: var(--card);
+    border: 1px solid var(--card-border);
+    border-radius: 14px;
+    padding: 20px;
+    margin-bottom: 24px;
+  }
+  .card-header {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+  .card-title { font-size: 1.15rem; font-weight: 600; }
+  .card-sub { font-size: 0.82rem; color: var(--muted); }
+  .toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+  .pills { display: flex; flex-wrap: wrap; gap: 6px; }
+  .pill {
+    background: #1f2937;
+    color: var(--muted);
+    border: 1px solid #374151;
+    padding: 5px 12px;
+    border-radius: 999px;
+    font-size: 0.8rem;
+    cursor: pointer;
+  }
+  .pill.active { background: rgba(56, 189, 248, 0.15); color: var(--accent); border-color: var(--accent); font-weight: 600; }
+
+  .chart-wrap { position: relative; width: 100%; overflow-x: auto; }
+  svg { display: block; width: 100%; height: auto; }
+  .legend { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 14px; font-size: 0.78rem; }
+  .legend-item { display: inline-flex; align-items: center; gap: 6px; color: var(--muted); cursor: pointer; padding: 3px 8px; border-radius: 6px; background: rgba(255,255,255,0.03); }
+  .legend-item.hidden { opacity: 0.35; text-decoration: line-through; }
+  .dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
+
+  .tooltip {
+    position: fixed;
+    pointer-events: none;
+    background: rgba(17, 24, 39, 0.96);
+    border: 1px solid #374151;
+    padding: 10px 12px;
+    border-radius: 8px;
+    font-size: 0.8rem;
+    color: var(--text);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+    z-index: 100;
+    display: none;
+    max-width: 280px;
+  }
+
+  .table-controls { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 12px; }
+  input[type="text"], select {
+    background: #1f2937;
+    border: 1px solid #374151;
+    color: var(--text);
+    padding: 7px 12px;
+    border-radius: 8px;
+    font-size: 0.85rem;
+  }
+  table { width: 100%; border-collapse: collapse; font-size: 0.86rem; }
+  th, td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--card-border); }
+  th { color: var(--muted); font-weight: 600; font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.04em; }
+  tr:hover td { background: rgba(255,255,255,0.02); }
+  .badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 999px;
+    font-size: 0.74rem;
+    font-weight: 600;
+  }
+  .badge-1t { background: rgba(16, 185, 129, 0.15); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.35); }
+  .badge-sub { background: rgba(245, 158, 11, 0.15); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.35); }
+  .badge-priv { background: rgba(168, 85, 247, 0.15); color: #d8b4fe; border: 1px solid rgba(168, 85, 247, 0.35); }
+  @media (max-width: 760px) {
+    .chart-wrap svg { min-width: 760px; }
+    .chart-wrap::after { content: "← swipe to scroll chart →"; display: block; text-align: center; color: var(--muted); font-size: 0.72rem; margin-top: 6px; position: sticky; left: 0; }
+  }
+  footer { text-align: center; color: var(--muted); font-size: 0.8rem; margin-top: 32px; }
+</style>
+</head>
+<body>
+<div class="container">
+  <header>
+    <div>
+      <h1>Global Tech Trillion-Dollar Club vs. AI &amp; Data Cohort</h1>
+      <div class="subtitle">Valuation trajectories (2005 – Nov 2026) &amp; elapsed years from founding to $1T</div>
+    </div>
+    <div class="header-controls">
+      <div class="toggle-group" id="antToggle">
+        <button class="active" data-mode="basic">ANT: $1.30T Basic</button>
+        <button data-mode="diluted">ANT: $1.77T Diluted</button>
+      </div>
+      <button class="btn" onclick="exportCSV()">Export CSV</button>
+    </div>
+  </header>
+
+  <div class="callout">
+    <strong>Note on Share Structure &amp; Listing Status:</strong> <strong>Anthropic (NASDAQ: ANT)</strong> listed on 19 Nov 2026 (IPO price $83, first-day close $97.17): ~$1.30T basic market cap (~13.4B shares) vs. ~$1.77T fully diluted (~18.2B shares incl. options &amp; unvested awards). <strong>SpaceX (NASDAQ: SPCX)</strong> listed in June 2026 and absorbed <strong>xAI</strong> in Feb 2026, so xAI is not shown separately. <strong>OpenAI ($1.25T, Nov 2026 round)</strong> is still <strong>private</strong>. Samsung, SK Hynix and Micron crossed $1T in May 2026 but have since fallen back below it. Non-tech $1T companies (e.g. Berkshire Hathaway, Eli Lilly) are excluded; Saudi Aramco is kept as the non-US, non-tech benchmark. Private valuations are last funding rounds; public values are mid-November 2026 market caps.
+  </div>
+
+  <!-- SECTION 1: TIMELINE -->
+  <div class="card">
+    <div class="card-header">
+      <div>
+        <div class="card-title">1. Valuation Trajectory (2005 – November 2026)</div>
+        <div class="card-sub">Dashed horizontal line marks the $1,000B ($1 Trillion) threshold • Year-end values (last point: Nov 2026); x-axis points are not evenly spaced in time</div>
+      </div>
+      <div class="toggle-group" id="scaleToggle" style="margin-left:auto;">
+        <button class="active" data-scale="log">Logarithmic Scale</button>
+        <button data-scale="linear">Linear Scale</button>
+      </div>
+    </div>
+
+    <div class="toolbar">
+      <div class="pills" id="cohortPills">
+        <button class="pill active" data-cohort="all">All Companies (<span data-count="all"></span>)</button>
+        <button class="pill" data-cohort="ai">AI &amp; Data Cohort (<span data-count="ai"></span>)</button>
+        <button class="pill" data-cohort="us1t">US $1T Club Tech (<span data-count="us1t"></span>)</button>
+        <button class="pill" data-cohort="nonus1t">Non-US $1T Club (<span data-count="nonus1t"></span>)</button>
+      </div>
+    </div>
+
+    <div class="chart-wrap">
+      <svg id="lineSvg" viewBox="0 0 1000 440"></svg>
+    </div>
+    <div class="legend" id="lineLegend"></div>
+  </div>
+
+  <!-- SECTION 2: VELOCITY BAR CHART -->
+  <div class="card">
+    <div class="card-header">
+      <div>
+        <div class="card-title">2. Years from Founding to $1T Milestone vs. Current Age of Sub-$1T Peers</div>
+        <div class="card-sub">X-axis measures elapsed years • Solid green bars = Reached $1T • Dashed amber bars = Active sub-$1T company age</div>
+      </div>
+      <div class="pills" id="barPills">
+        <button class="pill active" data-barfilter="all">All (<span data-count="all"></span>)</button>
+        <button class="pill" data-barfilter="1t">Reached $1T (<span data-count="1t"></span>)</button>
+        <button class="pill" data-barfilter="sub">Sub-$1T Age (<span data-count="sub"></span>)</button>
+      </div>
+    </div>
+    <div class="chart-wrap">
+      <svg id="barSvg" viewBox="0 0 1000 620"></svg>
+    </div>
+  </div>
+
+  <!-- SECTION 3: MATRIX TABLE -->
+  <div class="card">
+    <div class="card-header">
+      <div>
+        <div class="card-title">3. Comparative Market Matrix (November 2026)</div>
+        <div class="card-sub">Global $1T+ enterprises alongside leading public &amp; private AI/Data companies</div>
+      </div>
+    </div>
+    <div class="table-controls">
+      <input type="text" id="searchInput" placeholder="Filter company, region, or catalyst..." oninput="renderTable()">
+      <select id="sortSelect" onchange="renderTable()">
+        <option value="val_desc">Sort: Highest Valuation</option>
+        <option value="years_asc">Sort: Fastest to $1T / Youngest</option>
+        <option value="founded_desc">Sort: Newest Founded</option>
+      </select>
+    </div>
+    <div style="overflow-x:auto;">
+      <table>
+        <thead>
+          <tr>
+            <th>Company</th>
+            <th>Region</th>
+            <th>Listing</th>
+            <th>Founded</th>
+            <th>Nov 2026 Valuation</th>
+            <th>Milestone / Age</th>
+            <th>Primary Catalyst</th>
+          </tr>
+        </thead>
+        <tbody id="matrixBody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <footer>Market data as of mid-November 2026 (Anthropic at its 19 Nov 2026 first-day close) • Not investment advice • Made with Gemini, fact-checked with Claude</footer>
+</div>
+
+<div class="tooltip" id="tooltip"></div>
+
+<script>
+const YEARS = ["2005","2008","2010","2012","2014","2016","2018","2019","2020","2021","2022","2023","2024","2025","Nov 2026"];
+
+const COMPANIES = [
+  { name: "Apple (AAPL)", region: "US", listing: "Public", founded: 1976, val: 5100, years: 42.3, reached1T: true, milestone: "Aug 2018 ($1T)", cohort: ["us1t"], color: "#60a5fa", catalyst: "iPhone ecosystem & Apple Intelligence", series: [60,76,297,500,643,609,746,1300,2250,2900,2060,2990,3780,4350,5100] },
+  { name: "Nvidia (NVDA)", region: "US", listing: "Public", founded: 1993, val: 3750, years: 30.1, reached1T: true, milestone: "May 2023 ($1T)", cohort: ["us1t","ai"], color: "#4ade80", catalyst: "Blackwell/Rubin GPUs & CUDA moat", series: [6,4,9,8,11,57,81,144,323,735,364,1220,3380,4600,3750] },
+  { name: "Microsoft (MSFT)", region: "US", listing: "Public", founded: 1975, val: 3800, years: 44.1, reached1T: true, milestone: "Apr 2019 ($1T)", cohort: ["us1t"], color: "#38bdf8", catalyst: "Azure AI cloud & enterprise Copilot", series: [278,173,234,224,382,483,780,1200,1680,2520,1780,2790,3180,3620,3800] },
+  { name: "Alphabet (GOOGL)", region: "US", listing: "Public", founded: 1998, val: 3300, years: 21.4, reached1T: true, milestone: "Jan 2020 ($1T)", cohort: ["us1t"], color: "#f87171", catalyst: "Search, Gemini, Waymo & custom TPUs", series: [122,97,190,233,360,539,723,921,1180,1920,1140,1750,2360,2950,3300] },
+  { name: "Amazon (AMZN)", region: "US", listing: "Public", founded: 1994, val: 2800, years: 24.2, reached1T: true, milestone: "Sep 2018 ($1T)", cohort: ["us1t"], color: "#fbbf24", catalyst: "AWS cloud infrastructure & logistics", series: [19,22,81,114,144,356,734,920,1630,1690,856,1570,2320,2580,2800] },
+  { name: "SpaceX (SPCX)", region: "US", listing: "Public", founded: 2002, val: 1900, years: 23.9, reached1T: true, milestone: "Feb 2026 ($1T, xAI merger)", cohort: ["us1t"], color: "#94a3b8", catalyst: "Starlink, Starship & xAI/Grok (merged Feb 2026)", series: [null,0.5,null,4.8,null,12,28,null,46,100,127,180,350,800,1900] },
+  { name: "TSMC (TSM)", region: "Taiwan", listing: "Public", founded: 1987, val: 1800, years: 37.7, reached1T: true, milestone: "Oct 2024 ($1T)", cohort: ["nonus1t"], color: "#f472b6", catalyst: "Sub-3nm/2nm leading-edge AI foundry", series: [50,38,65,89,116,150,190,275,485,600,385,535,1020,1480,1800] },
+  { name: "Saudi Aramco", region: "Saudi Arabia", listing: "Public", founded: 1933, val: 1690, years: 86.6, reached1T: true, milestone: "Dec 2019 IPO ($1.88T)", cohort: ["nonus1t"], color: "#2dd4bf", catalyst: "Sovereign energy reserves & cash flow (non-tech benchmark)", series: [null,null,null,null,null,null,null,1880,2050,1900,1870,2130,1800,1750,1690] },
+  { name: "Broadcom (AVGO)", region: "US", listing: "Public", founded: 1961, val: 1700, years: 63.5, reached1T: true, milestone: "Dec 2024 ($1T)", cohort: ["us1t"], color: "#a78bfa", catalyst: "Custom AI ASICs (XPUs) & VMware", series: [null,null,7,null,26,70,103,null,178,274,234,520,1060,1380,1700] },
+  { name: "Meta (META)", region: "US", listing: "Public", founded: 2004, val: 1500, years: 17.4, reached1T: true, milestone: "Jun 2021 ($1T)", cohort: ["us1t"], color: "#3b82f6", catalyst: "Llama open-weight AI & ad targeting", series: [null,15,50,104,217,332,374,585,778,935,315,909,1480,1540,1500] },
+  { name: "Tesla (TSLA)", region: "US", listing: "Public", founded: 2003, val: 1500, years: 18.3, reached1T: true, milestone: "Oct 2021 ($1T)", cohort: ["us1t"], color: "#ef4444", catalyst: "EV scale, FSD autonomy & Optimus", series: [null,null,2.2,3.9,28,34,57,75,668,1060,389,789,1350,1410,1500] },
+  { name: "Anthropic (ANT)", region: "US", listing: "Public", founded: 2021, val: 1300, valDiluted: 1770, years: 5.8, reached1T: true, milestone: "Nov 2026 IPO ($1.30T)", cohort: ["ai","us1t"], color: "#f97316", catalyst: "Claude enterprise coding & agentic APIs", series: [null,null,null,null,null,null,null,null,null,0.8,4.1,18.4,18.4,350,1300] },
+  { name: "OpenAI", region: "US", listing: "Private", founded: 2015, val: 1250, years: 10.9, reached1T: true, milestone: "Nov 2026 Private ($1.25T)", cohort: ["ai","us1t"], color: "#10b981", catalyst: "ChatGPT scale & frontier reasoning", series: [null,null,null,null,null,null,null,1,null,14,null,80,157,500,1250] },
+  { name: "Micron (MU)", region: "US", listing: "Public", founded: 1978, val: 781, years: 47.6, reached1T: true, milestone: "May 2026 ($1T)", cohort: ["us1t"], color: "#facc15", catalyst: "HBM & DRAM memory supercycle", series: [null,null,null,null,null,null,35,null,84,104,55,94,94,null,781] },
+  { name: "Samsung Electronics", region: "South Korea", listing: "Public", founded: 1969, val: 840, years: 57.3, reached1T: true, milestone: "May 2026 ($1T)", cohort: ["nonus1t"], color: "#818cf8", catalyst: "HBM4 memory & global consumer devices", series: [85,null,130,null,185,null,230,null,440,null,280,null,340,null,840] },
+  { name: "SK Hynix", region: "South Korea", listing: "Public", founded: 1983, val: 600, years: 43.3, reached1T: true, milestone: "May 2026 ($1T)", cohort: ["nonus1t"], color: "#e879f9", catalyst: "Dominant HBM3E/HBM4 AI memory supplier", series: [null,null,14,null,32,null,40,null,75,null,42,null,110,null,600] },
+  { name: "Palantir (PLTR)", region: "US", listing: "Public", founded: 2003, val: 385, years: 23.5, reached1T: false, milestone: "Current Age (Sub-$1T)", cohort: ["ai"], color: "#c084fc", catalyst: "AIP enterprise & defense ontology", series: [null,null,null,null,15,null,20,null,48,null,13,null,170,310,385] },
+  { name: "Databricks", region: "US", listing: "Private", founded: 2013, val: 190, years: 13.5, reached1T: false, milestone: "Current Age (Sub-$1T)", cohort: ["ai"], color: "#fb7185", catalyst: "Data Intelligence Platform & lakehouse", series: [null,null,null,null,null,null,null,6.2,null,38,null,43,62,134,190] },
+  { name: "Snowflake (SNOW)", region: "US", listing: "Public", founded: 2012, val: 102, years: 14.3, reached1T: false, milestone: "Current Age (Sub-$1T)", cohort: ["ai"], color: "#7dd3fc", catalyst: "AI Data Cloud & Cortex enterprise", series: [null,null,null,null,null,null,3.9,null,70,null,46,null,52,78,102] },
+  { name: "Scale AI", region: "US", listing: "Private", founded: 2016, val: 29, years: 10.4, reached1T: false, milestone: "Current Age (Sub-$1T)", cohort: ["ai"], color: "#fde047", catalyst: "Frontier RLHF data foundry & evals", series: [null,null,null,null,null,null,null,1,null,7.3,null,null,13.8,29,29] },
+  { name: "Mistral AI", region: "France", listing: "Private", founded: 2023, val: 24, years: 3.6, reached1T: false, milestone: "Current Age (Sub-$1T)", cohort: ["ai"], color: "#fca5a5", catalyst: "European sovereign frontier & edge AI", series: [null,null,null,null,null,null,null,null,null,null,null,2,6.2,14,24] },
+  { name: "Perplexity AI", region: "US", listing: "Private", founded: 2022, val: 23, years: 4.3, reached1T: false, milestone: "Current Age (Sub-$1T)", cohort: ["ai"], color: "#6ee7b7", catalyst: "AI-native answer engine & search", series: [null,null,null,null,null,null,null,null,null,null,null,0.5,9,20,23] }
+];
+
+let state = { scale: "log", cohort: "all", antMode: "basic", barFilter: "all", hidden: new Set() };
+
+function fmtVal(b) {
+  return b >= 1000 ? `$${(b/1000).toFixed(2)}T` : `$${b}B`;
+}
+
+function getAntVal() {
+  return state.antMode === "diluted" ? 1770 : 1300;
+}
+
+function getEffectiveVal(c) {
+  return c.name.startsWith("Anthropic") ? getAntVal() : c.val;
+}
+
+function getEffectiveSeries(c) {
+  if (!c.name.startsWith("Anthropic")) return c.series;
+  const copy = [...c.series];
+  copy[copy.length - 1] = getAntVal();
+  return copy;
+}
+
+function renderLineChart() {
+  const svg = document.getElementById("lineSvg");
+  const W = 1000, H = 440, pad = { top: 24, right: 36, bottom: 38, left: 68 };
+  const plotW = W - pad.left - pad.right, plotH = H - pad.top - pad.bottom;
+
+  const filtered = COMPANIES.filter(c => state.cohort === "all" || c.cohort.includes(state.cohort));
+  const active = filtered.filter(c => !state.hidden.has(c.name));
+
+  const maxVal = Math.max(5500, ...active.map(c => getEffectiveVal(c)));
+  const minLog = 0.4, maxLog = 6000;
+
+  const yPos = v => {
+    if (state.scale === "log") {
+      const ratio = (Math.log10(v) - Math.log10(minLog)) / (Math.log10(maxLog) - Math.log10(minLog));
+      return pad.top + plotH - ratio * plotH;
+    }
+    return pad.top + plotH - (v / maxVal) * plotH;
+  };
+  const xPos = idx => pad.left + (idx / (YEARS.length - 1)) * plotW;
+
+  let html = "";
+  const ticks = state.scale === "log" ? [1, 10, 100, 1000, 5000] : [0, 1000, 2000, 3000, 4000, 5000];
+  ticks.forEach(t => {
+    const y = yPos(t);
+    const is1T = t === 1000;
+    html += `<line x1="${pad.left}" y1="${y}" x2="${W - pad.right}" y2="${y}" stroke="${is1T ? '#10b981' : '#1f2937'}" stroke-width="${is1T ? 1.6 : 1}" ${is1T ? 'stroke-dasharray="6,4"' : ''}/>`;
+    html += `<text x="${pad.left - 10}" y="${y + 4}" text-anchor="end" fill="${is1T ? '#34d399' : '#9ca3af'}" font-size="11" font-weight="${is1T ? '700' : '400'}">${t === 0 ? '$0' : fmtVal(t)}</text>`;
+    if (is1T) {
+      html += `<text x="${W - pad.right - 4}" y="${y - 6}" text-anchor="end" fill="#34d399" font-size="11" font-weight="600">$1T THRESHOLD</text>`;
+    }
+  });
+
+  YEARS.forEach((yr, idx) => {
+    const x = xPos(idx);
+    html += `<text x="${x}" y="${H - 12}" text-anchor="middle" fill="#9ca3af" font-size="11">${yr}</text>`;
+  });
+
+  active.forEach(c => {
+    const s = getEffectiveSeries(c);
+    let d = "";
+    s.forEach((val, idx) => {
+      if (val !== null) {
+        const x = xPos(idx), y = yPos(val);
+        d += (d === "" ? `M ${x} ${y}` : ` L ${x} ${y}`);
+      }
+    });
+    html += `<path d="${d}" fill="none" stroke="${c.color}" stroke-width="2.2" stroke-linejoin="round" opacity="0.9"/>`;
+    s.forEach((val, idx) => {
+      if (val !== null) {
+        const x = xPos(idx), y = yPos(val);
+        html += `<circle cx="${x}" cy="${y}" r="3.2" fill="${c.color}" data-name="${c.name}" data-yr="${YEARS[idx]}" data-val="${fmtVal(val)}" data-listing="${c.listing}" class="pt"/>`;
+      }
+    });
+  });
+
+  svg.innerHTML = html;
+
+  const leg = document.getElementById("lineLegend");
+  leg.innerHTML = filtered.map(c => `
+    <span class="legend-item ${state.hidden.has(c.name) ? 'hidden' : ''}" onclick="toggleSeries('${c.name}')">
+      <span class="dot" style="background:${c.color}"></span>${c.name} (${fmtVal(getEffectiveVal(c))})
+    </span>
+  `).join("");
+
+  bindTooltips();
+}
+
+function toggleSeries(name) {
+  if (state.hidden.has(name)) state.hidden.delete(name);
+  else state.hidden.add(name);
+  renderLineChart();
+}
+
+function renderBarChart() {
+  const svg = document.getElementById("barSvg");
+  let list = [...COMPANIES];
+  if (state.barFilter === "1t") list = list.filter(c => c.reached1T);
+  if (state.barFilter === "sub") list = list.filter(c => !c.reached1T);
+
+  list.sort((a, b) => {
+    if (a.reached1T !== b.reached1T) return a.reached1T ? -1 : 1;
+    return a.years - b.years;
+  });
+
+  const rowH = 26, pad = { top: 16, right: 175, bottom: 32, left: 175 };
+  const W = 1000, H = pad.top + pad.bottom + list.length * rowH;
+  svg.setAttribute("viewBox", `0 0 ${W} ${H}`);
+  const plotW = W - pad.left - pad.right;
+  const maxYrs = 90;
+
+  let html = "";
+  [0, 10, 20, 30, 40, 50, 60, 70, 80, 90].forEach(t => {
+    const x = pad.left + (t / maxYrs) * plotW;
+    html += `<line x1="${x}" y1="${pad.top}" x2="${x}" y2="${H - pad.bottom}" stroke="#1f2937" stroke-width="1"/>`;
+    html += `<text x="${x}" y="${H - 10}" text-anchor="middle" fill="#9ca3af" font-size="11">${t}y</text>`;
+  });
+
+  list.forEach((c, i) => {
+    const y = pad.top + i * rowH + 4;
+    const bw = Math.max(4, (c.years / maxYrs) * plotW);
+    const fill = c.reached1T ? "#10b981" : "rgba(245, 158, 11, 0.25)";
+    const stroke = c.reached1T ? "#34d399" : "#f59e0b";
+    const dash = c.reached1T ? "" : 'stroke-dasharray="4,3"';
+    const tag = c.reached1T
+      ? `${c.years}y • $1T (${c.milestone.split(" (")[0]})`
+      : `${c.years}y age • ${fmtVal(getEffectiveVal(c))}`;
+
+    html += `<text x="${pad.left - 10}" y="${y + 13}" text-anchor="end" fill="#e5e7eb" font-size="11.5" font-weight="500">${c.name}</text>`;
+    html += `<rect x="${pad.left}" y="${y}" width="${bw}" height="17" rx="4" fill="${fill}" stroke="${stroke}" stroke-width="1.2" ${dash}/>`;
+    html += `<text x="${pad.left + bw + 8}" y="${y + 13}" fill="${c.reached1T ? '#34d399' : '#fbbf24'}" font-size="11" font-weight="600">${tag}</text>`;
+  });
+
+  svg.innerHTML = html;
+}
+
+function renderTable() {
+  const q = document.getElementById("searchInput").value.toLowerCase();
+  const sort = document.getElementById("sortSelect").value;
+  let rows = COMPANIES.filter(c =>
+    c.name.toLowerCase().includes(q) ||
+    c.region.toLowerCase().includes(q) ||
+    c.catalyst.toLowerCase().includes(q) ||
+    c.listing.toLowerCase().includes(q)
+  );
+
+  rows.sort((a, b) => {
+    if (sort === "val_desc") return getEffectiveVal(b) - getEffectiveVal(a);
+    if (sort === "years_asc") return a.years - b.years;
+    return b.founded - a.founded;
+  });
+
+  document.getElementById("matrixBody").innerHTML = rows.map(c => `
+    <tr>
+      <td><strong>${c.name}</strong></td>
+      <td>${c.region}</td>
+      <td><span class="badge ${c.listing === 'Private' ? 'badge-priv' : 'badge-1t'}">${c.listing}</span></td>
+      <td>${c.founded}</td>
+      <td><strong>${fmtVal(getEffectiveVal(c))}</strong></td>
+      <td><span class="badge ${c.reached1T ? 'badge-1t' : 'badge-sub'}">${c.years} yrs • ${c.reached1T ? 'Reached $1T' : 'Current Age'}</span></td>
+      <td style="color:#d1d5db;">${c.catalyst}</td>
+    </tr>
+  `).join("");
+}
+
+function bindTooltips() {
+  const tip = document.getElementById("tooltip");
+  document.querySelectorAll(".pt").forEach(el => {
+    el.addEventListener("mouseenter", e => {
+      tip.style.display = "block";
+      tip.innerHTML = `<strong>${el.dataset.name}</strong> (${el.dataset.listing})<br>${el.dataset.yr}: <strong>${el.dataset.val}</strong>`;
+    });
+    el.addEventListener("mousemove", e => {
+      tip.style.left = (e.clientX + 14) + "px";
+      tip.style.top = (e.clientY - 12) + "px";
+    });
+    el.addEventListener("mouseleave", () => { tip.style.display = "none"; });
+  });
+}
+
+function exportCSV() {
+  const headers = ["Company","Region","Listing","Founded","Nov_2026_Valuation_B","Elapsed_Years","Status","Milestone","Catalyst"];
+  const lines = [headers.join(",")];
+  COMPANIES.forEach(c => {
+    lines.push([
+      `"${c.name}"`, `"${c.region}"`, c.listing, c.founded, getEffectiveVal(c), c.years,
+      c.reached1T ? "Reached $1T" : "Sub-$1T", `"${c.milestone}"`, `"${c.catalyst}"`
+    ].join(","));
+  });
+  const blob = new Blob([lines.join("\n")], { type: "text/csv" });
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "global_trillion_dollar_ai_study_nov2026.csv";
+  a.click();
+}
+
+document.querySelectorAll("#scaleToggle button").forEach(btn => {
+  btn.addEventListener("click", () => {
+    document.querySelectorAll("#scaleToggle button").forEach(b => b.classList.remove("active"));
+    btn.classList.add("active");
+    state.scale = btn.dataset.scale;
+    renderLineChart();
+  });
+});
+
+document.querySelectorAll("#antToggle button").forEach(btn => {
+  btn.addEventListener("click", () => {
+    document.querySelectorAll("#antToggle button").forEach(b => b.classList.remove("active"));
+    btn.classList.add("active");
+    state.antMode = btn.dataset.mode;
+    renderLineChart();
+    renderBarChart();
+    renderTable();
+  });
+});
+
+document.querySelectorAll("#cohortPills button").forEach(btn => {
+  btn.addEventListener("click", () => {
+    document.querySelectorAll("#cohortPills button").forEach(b => b.classList.remove("active"));
+    btn.classList.add("active");
+    state.cohort = btn.dataset.cohort;
+    renderLineChart();
+  });
+});
+
+document.querySelectorAll("#barPills button").forEach(btn => {
+  btn.addEventListener("click", () => {
+    document.querySelectorAll("#barPills button").forEach(b => b.classList.remove("active"));
+    btn.classList.add("active");
+    state.barFilter = btn.dataset.barfilter;
+    renderBarChart();
+  });
+});
+
+const COUNTS = {
+  all: COMPANIES.length,
+  ai: COMPANIES.filter(c => c.cohort.includes("ai")).length,
+  us1t: COMPANIES.filter(c => c.cohort.includes("us1t")).length,
+  nonus1t: COMPANIES.filter(c => c.cohort.includes("nonus1t")).length,
+  "1t": COMPANIES.filter(c => c.reached1T).length,
+  sub: COMPANIES.filter(c => !c.reached1T).length
+};
+document.querySelectorAll("[data-count]").forEach(el => { el.textContent = COUNTS[el.dataset.count]; });
+
+renderLineChart();
+renderBarChart();
+renderTable();
+</script>
+</body>
+</html>
